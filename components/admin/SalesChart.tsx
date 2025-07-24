@@ -1,16 +1,32 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { motion } from "framer-motion"
+import { useEffect, useState } from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
-type ChartData = { month: string; sales: number }
+type ChartData = { month: string; sales: number };
 
 export default function SalesChart() {
-  const [chartData, setChartData] = useState<ChartData[]>([])
-  const [loading, setLoading] = useState(true)
+  const [chartData, setChartData] = useState<ChartData[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate chart data
+    // Simulate fetching chart data
     const mockData = [
       { month: "Jan", sales: 4000 },
       { month: "Feb", sales: 3000 },
@@ -18,42 +34,84 @@ export default function SalesChart() {
       { month: "Apr", sales: 4500 },
       { month: "May", sales: 6000 },
       { month: "Jun", sales: 5500 },
-    ]
-    setChartData(mockData)
-    setLoading(false)
-  }, [])
+      { month: "Jul", sales: 7000 },
+      { month: "Aug", sales: 6500 },
+      { month: "Sep", sales: 7500 },
+      { month: "Oct", sales: 8000 },
+      { month: "Nov", sales: 9000 },
+      { month: "Dec", sales: 8500 },
+    ];
+    setChartData(mockData);
+    setLoading(false);
+  }, []);
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-        <div className="animate-pulse">
-          <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded mb-4"></div>
-          <div className="h-64 bg-gray-300 dark:bg-gray-600 rounded"></div>
-        </div>
-      </div>
-    )
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-6 w-1/2" />
+          <Skeleton className="h-4 w-1/4" />
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-[300px] w-full" />
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
-    >
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Sales Overview</h3>
-      <div className="h-64 flex items-end justify-between space-x-2">
-        {chartData.map((data: any, index) => (
-          <div key={data.month} className="flex flex-col items-center flex-1">
-            <motion.div
-              initial={{ height: 0 }}
-              animate={{ height: `${(data.sales / 6000) * 100}%` }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-primary-600 w-full rounded-t-md min-h-[20px]"
-            />
-            <span className="text-sm text-gray-600 dark:text-gray-400 mt-2">{data.month}</span>
-          </div>
-        ))}
-      </div>
-    </motion.div>
-  )
+    <Card>
+      <CardHeader>
+        <CardTitle>Sales Overview</CardTitle>
+        <CardDescription>A summary of sales over the last year.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={chartData}
+              margin={{
+                top: 5,
+                right: 20,
+                left: -10,
+                bottom: 5,
+              }}
+            >
+              <XAxis
+                dataKey="month"
+                stroke="hsl(var(--muted-foreground))"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis
+                stroke="hsl(var(--muted-foreground))"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value) => `$${value / 1000}k`}
+              />
+              <Tooltip
+                cursor={{ fill: "hsl(var(--muted))" }}
+                contentStyle={{
+                  backgroundColor: "hsl(var(--background))",
+                  borderColor: "hsl(var(--border))",
+                }}
+              />
+              <Legend
+                wrapperStyle={{
+                  paddingTop: "20px",
+                }}
+              />
+              <Bar
+                dataKey="sales"
+                fill="hsl(var(--primary))"
+                radius={[4, 4, 0, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
+  );
 }

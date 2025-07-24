@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
-import { PlusIcon, PencilIcon, TrashIcon, EyeIcon } from "lucide-react"
-import { toast } from "sonner"
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { PlusIcon, PencilIcon, TrashIcon, EyeIcon } from "lucide-react";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,14 +24,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -39,115 +38,112 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import type { Collection, Product } from "@/types"
+} from "@/components/ui/table";
+import type { Collection, Product } from "@/types";
 
 export default function AdminCollectionsPage() {
-  const [collections, setCollections] = useState<Collection[]>([])
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
-  const [editingCollection, setEditingCollection] = useState<Collection | null>(null)
-  const [viewingCollection, setViewingCollection] = useState<Collection | null>(null)
-  const [deleteCollectionId, setDeleteCollectionId] = useState<string | null>(null)
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [editingCollection, setEditingCollection] = useState<Collection | null>(
+    null
+  );
+  const [viewingCollection, setViewingCollection] = useState<Collection | null>(
+    null
+  );
+  const [deleteCollectionId, setDeleteCollectionId] = useState<string | null>(
+    null
+  );
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
     description: "",
     image: "",
-    products: [] as string[],
-  })
-  const [formLoading, setFormLoading] = useState(false)
+  });
+  const [formLoading, setFormLoading] = useState(false);
 
   useEffect(() => {
-    fetchCollections()
-    fetchProducts()
-  }, [])
+    fetchCollections();
+    fetchProducts();
+  }, []);
 
   const fetchCollections = async () => {
     try {
-      const response = await fetch("/api/admin/collections")
-      const data = await response.json()
-      setCollections(data.collections || [])
+      const response = await fetch("/api/admin/collections");
+      const data = await response.json();
+      setCollections(data.collections || []);
     } catch (error) {
-      console.error("Error fetching collections:", error)
-      toast.error("Failed to fetch collections")
+      console.error("Error fetching collections:", error);
+      toast.error("Failed to fetch collections");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch("/api/admin/products?limit=100")
-      const data = await response.json()
-      setProducts(data.products || [])
+      const response = await fetch("/api/admin/products?limit=100");
+      const data = await response.json();
+      setProducts(data.products || []);
     } catch (error) {
-      console.error("Error fetching products:", error)
+      console.error("Error fetching products:", error);
     }
-  }
+  };
 
   const handleOpenDialog = (collection?: Collection) => {
     if (collection) {
-      setEditingCollection(collection)
+      setEditingCollection(collection);
       setFormData({
         title: collection.title,
         slug: collection.slug,
         description: collection.description || "",
         image: collection.image || "",
-        products: collection.products?.map(p => (typeof p === 'string' ? p : p._id)) || [],
-      })
+      });
     } else {
-      setEditingCollection(null)
-      setFormData({ title: "", slug: "", description: "", image: "", products: [] })
+      setEditingCollection(null);
+      setFormData({ title: "", slug: "", description: "", image: "" });
     }
-    setIsDialogOpen(true)
-  }
+    setIsDialogOpen(true);
+  };
 
   const handleOpenViewDialog = (collection: Collection) => {
-    setViewingCollection(collection)
-    setIsViewDialogOpen(true)
-  }
+    setViewingCollection(collection);
+    setIsViewDialogOpen(true);
+  };
 
   const handleCloseDialog = () => {
-    setIsDialogOpen(false)
-    setEditingCollection(null)
-    setFormData({ title: "", slug: "", description: "", image: "", products: [] })
-  }
+    setIsDialogOpen(false);
+    setEditingCollection(null);
+    setFormData({ title: "", slug: "", description: "", image: "" });
+  };
 
   const handleCloseViewDialog = () => {
-    setIsViewDialogOpen(false)
-    setViewingCollection(null)
-  }
+    setIsViewDialogOpen(false);
+    setViewingCollection(null);
+  };
 
   const handleInputChange = (field: string, value: string | string[]) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
+    setFormData((prev) => ({ ...prev, [field]: value }));
     if (field === "title" && !editingCollection) {
       const slug = (value as string)
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "")
-      setFormData((prev) => ({ ...prev, slug }))
+        .replace(/(^-|-$)/g, "");
+      setFormData((prev) => ({ ...prev, slug }));
     }
-  }
-
-  const handleProductToggle = (productId: string, checked: boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      products: checked 
-        ? [...prev.products, productId]
-        : prev.products.filter(id => id !== productId)
-    }))
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setFormLoading(true)
+    e.preventDefault();
+    setFormLoading(true);
 
     try {
-      const method = editingCollection ? "PUT" : "POST"
-      const url = editingCollection ? `/api/admin/collections/${editingCollection._id}` : "/api/admin/collections"
+      const method = editingCollection ? "PUT" : "POST";
+      const url = editingCollection
+        ? `/api/admin/collections/${editingCollection._id}`
+        : "/api/admin/collections";
 
       const response = await fetch(url, {
         method,
@@ -155,45 +151,57 @@ export default function AdminCollectionsPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-      })
+      });
 
       if (response.ok) {
-        toast.success(`Collection ${editingCollection ? "updated" : "created"} successfully!`)
-        fetchCollections()
-        handleCloseDialog()
+        toast.success(
+          `Collection ${
+            editingCollection ? "updated" : "created"
+          } successfully!`
+        );
+        fetchCollections();
+        handleCloseDialog();
       } else {
-        const data = await response.json()
-        toast.error(data.error || `Failed to ${editingCollection ? "update" : "create"} collection`)
+        const data = await response.json();
+        toast.error(
+          data.error ||
+            `Failed to ${editingCollection ? "update" : "create"} collection`
+        );
       }
     } catch (error) {
-      console.error(error)
-      toast.error(`Error ${editingCollection ? "updating" : "creating"} collection`)
+      console.error(error);
+      toast.error(
+        `Error ${editingCollection ? "updating" : "creating"} collection`
+      );
     } finally {
-      setFormLoading(false)
+      setFormLoading(false);
     }
-  }
+  };
 
   const handleDeleteCollection = async () => {
-    if (!deleteCollectionId) return
+    if (!deleteCollectionId) return;
 
     try {
-      const response = await fetch(`/api/admin/collections/${deleteCollectionId}`, {
-        method: "DELETE",
-      })
+      const response = await fetch(
+        `/api/admin/collections/${deleteCollectionId}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (response.ok) {
-        toast.success("Collection deleted successfully")
-        fetchCollections()
-        setDeleteCollectionId(null)
+        toast.success("Collection deleted successfully");
+        fetchCollections();
+        setDeleteCollectionId(null);
       } else {
-        const data = await response.json()
-        toast.error(data.error || "Failed to delete collection")
+        const data = await response.json();
+        toast.error(data.error || "Failed to delete collection");
       }
     } catch (error) {
-      console.error("Error deleting collection:", error)
-      toast.error("Error deleting collection")
+      console.error("Error deleting collection:", error);
+      toast.error("Error deleting collection");
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -203,7 +211,7 @@ export default function AdminCollectionsPage() {
           <div className="h-64 bg-muted rounded"></div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -212,7 +220,9 @@ export default function AdminCollectionsPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Collections</h1>
-          <p className="text-muted-foreground">Manage your product collections</p>
+          <p className="text-muted-foreground">
+            Manage your product collections
+          </p>
         </div>
         <Button onClick={() => handleOpenDialog()}>
           <PlusIcon className="mr-2 h-4 w-4" />
@@ -234,7 +244,7 @@ export default function AdminCollectionsPage() {
                   <TableHead>Title</TableHead>
                   <TableHead>Description</TableHead>
                   <TableHead>Products</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead className="text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -267,17 +277,17 @@ export default function AdminCollectionsPage() {
                         {collection.products?.length || 0} products
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button 
-                          variant="ghost" 
+                    <TableCell>
+                      <div className="flex items-center justify-center gap-2">
+                        <Button
+                          variant="ghost"
                           size="sm"
                           onClick={() => handleOpenViewDialog(collection)}
                         >
                           <EyeIcon className="h-4 w-4" />
                         </Button>
-                        <Button 
-                          variant="ghost" 
+                        <Button
+                          variant="ghost"
                           size="sm"
                           onClick={() => handleOpenDialog(collection)}
                         >
@@ -288,7 +298,9 @@ export default function AdminCollectionsPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => setDeleteCollectionId(collection._id)}
+                              onClick={() =>
+                                setDeleteCollectionId(collection._id)
+                              }
                             >
                               <TrashIcon className="h-4 w-4" />
                             </Button>
@@ -297,12 +309,15 @@ export default function AdminCollectionsPage() {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                               <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete the
-                                collection "{collection.title}" from the database.
+                                This action cannot be undone. This will
+                                permanently delete the collection "
+                                {collection.title}" from the database.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel onClick={() => setDeleteCollectionId(null)}>
+                              <AlertDialogCancel
+                                onClick={() => setDeleteCollectionId(null)}
+                              >
                                 Cancel
                               </AlertDialogCancel>
                               <AlertDialogAction
@@ -325,7 +340,11 @@ export default function AdminCollectionsPage() {
           {collections.length === 0 && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">No collections found</p>
-              <Button variant="outline" className="mt-4" onClick={() => handleOpenDialog()}>
+              <Button
+                variant="outline"
+                className="mt-4"
+                onClick={() => handleOpenDialog()}
+              >
                 <PlusIcon className="mr-2 h-4 w-4" />
                 Add your first collection
               </Button>
@@ -338,14 +357,18 @@ export default function AdminCollectionsPage() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editingCollection ? "Edit Collection" : "Add New Collection"}</DialogTitle>
+            <DialogTitle>
+              {editingCollection ? "Edit Collection" : "Add New Collection"}
+            </DialogTitle>
             <DialogDescription>
-              {editingCollection ? "Make changes to this collection." : "Add a new collection to your store."}
+              {editingCollection
+                ? "Make changes to this collection."
+                : "Add a new collection to your store."}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="title" className="text-right">
+              <Label htmlFor="title"  >
                 Title
               </Label>
               <Input
@@ -353,11 +376,10 @@ export default function AdminCollectionsPage() {
                 value={formData.title}
                 onChange={(e) => handleInputChange("title", e.target.value)}
                 className="col-span-3"
-                required
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="slug" className="text-right">
+              <Label htmlFor="slug"  >
                 Slug
               </Label>
               <Input
@@ -365,23 +387,24 @@ export default function AdminCollectionsPage() {
                 value={formData.slug}
                 onChange={(e) => handleInputChange("slug", e.target.value)}
                 className="col-span-3"
-                required
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="description" className="text-right">
+              <Label htmlFor="description"  >
                 Description
               </Label>
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => handleInputChange("description", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("description", e.target.value)
+                }
                 className="col-span-3"
                 placeholder="Optional description for the collection"
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="image" className="text-right">
+              <Label htmlFor="image"  >
                 Image URL
               </Label>
               <Input
@@ -390,51 +413,22 @@ export default function AdminCollectionsPage() {
                 onChange={(e) => handleInputChange("image", e.target.value)}
                 className="col-span-3"
                 placeholder="https://example.com/image.jpg"
-                required
               />
-            </div>
-            
-            {/* Products Selection */}
-            <div className="grid grid-cols-4 items-start gap-4">
-              <Label className="text-right mt-2">
-                Products
-              </Label>
-              <div className="col-span-3 max-h-48 overflow-y-auto border rounded-md p-3">
-                {products.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No products available</p>
-                ) : (
-                  <div className="space-y-2">
-                    {products.map((product) => (
-                      <div key={product._id} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`product-${product._id}`}
-                          checked={formData.products.includes(product._id)}
-                          onCheckedChange={(checked) => 
-                            handleProductToggle(product._id, checked as boolean)
-                          }
-                        />
-                        <Label 
-                          htmlFor={`product-${product._id}`}
-                          className="text-sm font-normal cursor-pointer flex-1"
-                        >
-                          {product.title}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={handleCloseDialog}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCloseDialog}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={formLoading}>
                 {(() => {
-                  if (formLoading) return "Saving..."
-                  if (editingCollection) return "Save Changes"
-                  return "Create Collection"
+                  if (formLoading) return "Saving...";
+                  if (editingCollection) return "Save Changes";
+                  return "Create Collection";
                 })()}
               </Button>
             </DialogFooter>
@@ -446,7 +440,9 @@ export default function AdminCollectionsPage() {
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
         <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>View Collection: {viewingCollection?.title}</DialogTitle>
+            <DialogTitle>
+              View Collection: {viewingCollection?.title}
+            </DialogTitle>
             <DialogDescription>
               Collection details and associated products
             </DialogDescription>
@@ -466,7 +462,7 @@ export default function AdminCollectionsPage() {
                   </div>
                 )}
               </div>
-              
+
               <div className="space-y-2">
                 <h3 className="font-semibold">Description</h3>
                 <p className="text-muted-foreground">
@@ -478,35 +474,44 @@ export default function AdminCollectionsPage() {
                 <h3 className="font-semibold">
                   Products ({viewingCollection.products?.length || 0})
                 </h3>
-                {viewingCollection.products && viewingCollection.products.length > 0 ? (
+                {viewingCollection.products &&
+                viewingCollection.products.length > 0 ? (
                   <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto">
                     {viewingCollection.products.map((product) => {
-                      const productData = typeof product === 'string' ? 
-                        products.find(p => p._id === product) : product
+                      const productData =
+                        typeof product === "string"
+                          ? products.find((p) => p._id === product)
+                          : product;
                       return (
-                        <div key={typeof product === 'string' ? product : product._id} 
-                             className="flex items-center space-x-3 p-2 border rounded">
+                        <div
+                          key={
+                            typeof product === "string" ? product : product._id
+                          }
+                          className="flex items-center space-x-3 p-2 border rounded"
+                        >
                           {productData?.images?.[0] && (
-                            <img 
-                              src={productData.images[0]} 
+                            <img
+                              src={productData.images[0]}
                               alt={productData.title}
                               className="w-10 h-10 object-cover rounded"
                             />
                           )}
                           <div className="flex-1">
                             <p className="text-sm font-medium">
-                              {productData?.title || 'Unknown Product'}
+                              {productData?.title || "Unknown Product"}
                             </p>
                             <p className="text-xs text-muted-foreground">
                               ${productData?.price || 0}
                             </p>
                           </div>
                         </div>
-                      )
+                      );
                     })}
                   </div>
                 ) : (
-                  <p className="text-muted-foreground">No products in this collection</p>
+                  <p className="text-muted-foreground">
+                    No products in this collection
+                  </p>
                 )}
               </div>
             </div>
@@ -515,15 +520,17 @@ export default function AdminCollectionsPage() {
             <Button variant="outline" onClick={handleCloseViewDialog}>
               Close
             </Button>
-            <Button onClick={() => {
-              handleCloseViewDialog()
-              if (viewingCollection) handleOpenDialog(viewingCollection)
-            }}>
+            <Button
+              onClick={() => {
+                handleCloseViewDialog();
+                if (viewingCollection) handleOpenDialog(viewingCollection);
+              }}
+            >
               Edit Collection
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }

@@ -1,32 +1,45 @@
 "use client";
 
 import { useSession, signOut } from "next-auth/react";
-import { BellIcon, UserCircleIcon } from "@heroicons/react/24/outline";
-import { Menu, Transition } from "@headlessui/react";
-import { Fragment } from "react";
+import { Bell } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { SessionUser } from "@/types";
+
+type SessionType = {
+  user: SessionUser;
+};
 
 export default function AdminHeader() {
-  const { data: session } = useSession();
+  const { data: session } = useSession() as { data: SessionType | null };
 
   return (
     <motion.header
       initial={{ y: -50 }}
       animate={{ y: 0 }}
-      className=" sticky top-0 bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700"
+      className=" sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm border-b"
     >
-      <div className="px-6 py-4">
+      <div className="px-6 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">M</span>
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-lg">
+                M
+              </span>
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Admin Dashboard
-              </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <h1 className="text-xl font-semibold">Admin Dashboard</h1>
+              <p className="text-sm text-muted-foreground">
                 ModernShop Management
               </p>
             </div>
@@ -36,60 +49,53 @@ export default function AdminHeader() {
             <ThemeToggle />
 
             {/* Notifications */}
-            <button className="relative p-2 text-gray-600 dark:text-gray-300 hover:text-primary-600">
-              <BellIcon className="h-6 w-6" />
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+            <Button variant="ghost" size="icon" className="relative">
+              <Bell className="h-5 w-5" />
+              <span className="absolute top-1 right-1.5 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                 3
               </span>
-            </button>
+            </Button>
 
             {/* User Menu */}
-            <Menu as="div" className="relative">
-              <Menu.Button className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-primary-600">
-                <UserCircleIcon className="h-8 w-8" />
-                <span className="text-sm font-medium">
-                  {session?.user?.name}
-                </span>
-              </Menu.Button>
-
-              <Transition
-                as={Fragment}
-                enter="transition ease-out duration-100"
-                enterFrom="transform opacity-0 scale-95"
-                enterTo="transform opacity-100 scale-100"
-                leave="transition ease-in duration-75"
-                leaveFrom="transform opacity-100 scale-100"
-                leaveTo="transform opacity-0 scale-95"
-              >
-                <Menu.Items className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
-                  <div className="py-1">
-                    <Menu.Item>
-                      {({ active }) => (
-                        <button
-                          className={`${
-                            active ? "bg-gray-100 dark:bg-gray-800" : ""
-                          } block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 w-full text-left`}
-                        >
-                          Profile Settings
-                        </button>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <button
-                          onClick={() => signOut()}
-                          className={`${
-                            active ? "bg-gray-100 dark:bg-gray-800" : ""
-                          } block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 w-full text-left`}
-                        >
-                          Sign Out
-                        </button>
-                      )}
-                    </Menu.Item>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="relative h-8 w-8 rounded-full"
+                >
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage
+                      src={session?.user?.image || "/placeholder-user.jpg"}
+                      alt={session?.user?.name || ""}
+                    />
+                    {/* <AvatarFallback>
+                      {session?.user?.name
+                        ?.split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </AvatarFallback> */}
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      {session?.user?.name}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {session?.user?.email}
+                    </p>
                   </div>
-                </Menu.Items>
-              </Transition>
-            </Menu>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Profile Settings</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => signOut()}>
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>

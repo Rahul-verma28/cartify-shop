@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     await connectDB()
 
-    const { title, slug, description, image, products } = await request.json()
+    const { title, slug, description, image } = await request.json()
 
     if (!title || !slug || !image) {
       return NextResponse.json({ error: "Title, slug, and image are required" }, { status: 400 })
@@ -52,12 +52,8 @@ export async function POST(request: NextRequest) {
       slug, 
       description, 
       image, 
-      products: products || [] 
     })
     await collection.save()
-
-    // Populate the products before returning
-    await collection.populate("products", "title slug price images")
 
     return NextResponse.json({ collection }, { status: 201 })
   } catch (error) {

@@ -1,85 +1,113 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
-  HomeIcon,
-  ShoppingBagIcon,
-  CubeIcon,
-  UsersIcon,
-  ChartBarIcon,
-  CogIcon,
-  TagIcon,
-  TruckIcon,
-  ChatBubbleLeftRightIcon,
-  RectangleStackIcon,
-} from "@heroicons/react/24/outline"
-import { motion } from "framer-motion"
+  LayoutDashboard,
+  Package,
+  ShoppingCart,
+  Users,
+  BarChart,
+  Settings,
+  Tags,
+  Truck,
+  MessageSquare,
+  Library,
+  PanelLeftClose,
+  PanelLeftOpen,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const navigation = [
-  { name: "Dashboard", href: "/admin", icon: HomeIcon },
-  { name: "Products", href: "/admin/products", icon: CubeIcon },
-  { name: "Orders", href: "/admin/orders", icon: ShoppingBagIcon },
-  { name: "Users", href: "/admin/users", icon: UsersIcon },
-  { name: "Categories", href: "/admin/categories", icon: TagIcon },
-  { name: "Collections", href: "/admin/collections", icon: RectangleStackIcon },
-  { name: "Reviews", href: "/admin/reviews", icon: ChatBubbleLeftRightIcon },
-  { name: "Shipping", href: "/admin/shipping", icon: TruckIcon },
-  { name: "Analytics", href: "/admin/analytics", icon: ChartBarIcon },
-  { name: "Settings", href: "/admin/settings", icon: CogIcon },
-]
+  { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { name: "Products", href: "/admin/products", icon: Package },
+  { name: "Orders", href: "/admin/orders", icon: ShoppingCart },
+  { name: "Users", href: "/admin/users", icon: Users },
+  { name: "Categories", href: "/admin/categories", icon: Tags },
+  { name: "Collections", href: "/admin/collections", icon: Library },
+  { name: "Reviews", href: "/admin/reviews", icon: MessageSquare },
+  { name: "Shipping", href: "/admin/shipping", icon: Truck },
+  { name: "Analytics", href: "/admin/analytics", icon: BarChart },
+  { name: "Settings", href: "/admin/settings", icon: Settings },
+];
 
 export default function AdminSidebar() {
-  const pathname = usePathname()
-  const [collapsed, setCollapsed] = useState(false)
+  const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
     <motion.aside
       initial={{ x: -250 }}
       animate={{ x: 0 }}
-      className={`${
+      className={cn(
+        "bg-background border-r transition-all duration-300 flex flex-col",
         collapsed ? "w-16" : "w-64"
-      } bg-white dark:bg-gray-900 shadow-sm border-r border-gray-200 dark:border-gray-700 transition-all duration-300`}
+      )}
     >
-      <div className="p-4">
-        <button
+      <div className="p-4 flex items-center justify-between h-[65px] border-b">
+        {!collapsed && (
+          <h2 className="text-lg font-semibold tracking-tight">ModernShop</h2>
+        )}
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => setCollapsed(!collapsed)}
-          className="w-full flex items-center justify-center p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+          className="ml-auto"
         >
-          <svg
-            className={`h-5 w-5 transition-transform ${collapsed ? "rotate-180" : ""}`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
+          {collapsed ? (
+            <PanelLeftOpen className="h-5 w-5" />
+          ) : (
+            <PanelLeftClose className="h-5 w-5" />
+          )}
+        </Button>
       </div>
 
-      <nav className="px-4 pb-4">
-        <ul className="space-y-2">
-          {navigation.map((item) => {
-            const isActive = pathname === item.href
-            return (
-              <li key={item.name}>
-                <Link
-                  href={item.href}
-                  className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                    isActive
-                      ? "bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                  }`}
-                >
-                  <item.icon className="h-5 w-5 flex-shrink-0" />
-                  {!collapsed && <span className="ml-3">{item.name}</span>}
-                </Link>
-              </li>
-            )
-          })}
-        </ul>
+      <nav className="flex-1 px-4 py-4">
+        <TooltipProvider delayDuration={0}>
+          <ul className="space-y-1">
+            {navigation.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <li key={item.name}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          "flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                          isActive
+                            ? "bg-muted text-primary"
+                            : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+                          collapsed && "justify-center"
+                        )}
+                      >
+                        <item.icon className="h-5 w-5 flex-shrink-0" />
+                        {!collapsed && (
+                          <span className="ml-3">{item.name}</span>
+                        )}
+                      </Link>
+                    </TooltipTrigger>
+                    {collapsed && (
+                      <TooltipContent side="right">
+                        <p>{item.name}</p>
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                </li>
+              );
+            })}
+          </ul>
+        </TooltipProvider>
       </nav>
     </motion.aside>
-  )
+  );
 }

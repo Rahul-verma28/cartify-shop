@@ -8,6 +8,14 @@ export interface User {
   updatedAt: Date
 }
 
+export type SessionUser = {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  image?: string;
+};
+
 export interface Product {
   _id: string
   title: string
@@ -22,6 +30,9 @@ export interface Product {
     average: number
     count: number
   }
+  size: string[]
+  color: string[]
+  collections?: string[]
   inventory: number
   featured: boolean
   createdAt: Date

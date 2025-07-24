@@ -1,27 +1,32 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
-import { PlusIcon, PencilIcon, TrashIcon, EyeIcon } from "lucide-react"
-import Link from "next/link"
-import Image from "next/image"
-import { toast } from "sonner"
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { PlusIcon, PencilIcon, TrashIcon, EyeIcon } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import { toast } from "sonner";
 
 // Redux imports
-import { useAppDispatch, useAppSelector } from "@/hooks/use-redux"
+import { useAppDispatch, useAppSelector } from "@/hooks/use-redux";
 import {
   fetchAdminProducts,
   deleteAdminProduct,
   setSearchTerm,
   setSelectedCategory,
+  setSelectedCollection,
   selectFilteredProducts,
-} from "@/redux/slices/adminProductsSlice"
+} from "@/redux/slices/adminProductsSlice";
+import {
+  fetchCollections,
+  fetchCategories,
+} from "@/redux/slices/filtersSlice";
 
 // shadcn UI imports
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -29,14 +34,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,60 +52,125 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
+import { Skeleton } from "@/components/ui/skeleton";
+import type { Collection, Category } from "@/types";
 
 export default function AdminProductsPage() {
-  const dispatch = useAppDispatch()
-  const { 
-    loading, 
-    error, 
-    searchTerm, 
-    selectedCategory 
-  } = useAppSelector((state) => state.adminProducts)
-  
-  const filteredProducts = useAppSelector(selectFilteredProducts)
-  const [deleteProductId, setDeleteProductId] = useState<string | null>(null)
+  const dispatch = useAppDispatch();
+  const { loading, error, searchTerm, selectedCategory, selectedCollection } =
+    useAppSelector((state) => state.adminProducts);
+  const { collections, categories } = useAppSelector((state) => state.filters);
+
+  const filteredProducts = useAppSelector(selectFilteredProducts);
+  const [deleteProductId, setDeleteProductId] = useState<string | null>(null);
 
   useEffect(() => {
-    dispatch(fetchAdminProducts())
-  }, [dispatch])
+    dispatch(fetchAdminProducts());
+    dispatch(fetchCollections());
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
   useEffect(() => {
     if (error) {
-      toast.error(error)
+      toast.error(error);
     }
-  }, [error])
+  }, [error]);
 
   const handleDeleteProduct = async () => {
-    if (!deleteProductId) return
+    if (!deleteProductId) return;
 
     try {
-      await dispatch(deleteAdminProduct(deleteProductId)).unwrap()
-      toast.success("Product deleted successfully")
-      setDeleteProductId(null)
+      await dispatch(deleteAdminProduct(deleteProductId)).unwrap();
+      toast.success("Product deleted successfully");
+      setDeleteProductId(null);
     } catch (err) {
-      console.error("Delete product error:", err)
-      toast.error("Failed to delete product")
+      console.error("Delete product error:", err);
+      toast.error("Failed to delete product");
     }
-  }
+  };
 
   const handleSearchChange = (value: string) => {
-    dispatch(setSearchTerm(value))
-  }
+    dispatch(setSearchTerm(value));
+  };
 
   const handleCategoryChange = (value: string) => {
-    dispatch(setSelectedCategory(value === "all" ? "" : value))
-  }
+    dispatch(setSelectedCategory(value === "all" ? "" : value));
+  };
+
+  const handleCollectionChange = (value: string) => {
+    dispatch(setSelectedCollection(value === "all" ? "" : value));
+  };
+
+  console.log("Filtered Products:", filteredProducts);
 
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="animate-pulse">
-          <div className="h-8 bg-muted rounded mb-4"></div>
-          <div className="h-64 bg-muted rounded"></div>
+        {/* Header Skeleton */}
+        <div className="flex justify-between items-center">
+          <div>
+            <Skeleton className="h-8 w-48 mb-2" />
+            <Skeleton className="h-4 w-64" />
+          </div>
+          <Skeleton className="h-10 w-32" />
         </div>
+
+        {/* Table Card Skeleton */}
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-7 w-40 mb-4" />
+            <div className="flex flex-col md:flex-row gap-4">
+              <Skeleton className="h-10 flex-1" />
+              <Skeleton className="h-10 w-full md:w-48" />
+              <Skeleton className="h-10 w-full md:w-48" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    {[...Array(7)].map((_, i) => (
+                      <TableHead key={i}>
+                        <Skeleton className="h-5 w-20" />
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {[...Array(5)].map((_, index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Skeleton className="h-12 w-12 rounded-lg" />
+                          <div className="space-y-2">
+                            <Skeleton className="h-4 w-32" />
+                            <Skeleton className="h-3 w-24" />
+                          </div>
+                        </div>
+                      </TableCell>
+                      {[...Array(5)].map((_, i) => (
+                        <TableCell key={i}>
+                          <Skeleton className="h-5 w-full" />
+                        </TableCell>
+                      ))}
+                      <TableCell>
+                        <div className="flex justify-end gap-2">
+                          <Skeleton className="h-8 w-8" />
+                          <Skeleton className="h-8 w-8" />
+                          <Skeleton className="h-8 w-8" />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -119,13 +189,11 @@ export default function AdminProductsPage() {
         </Button>
       </div>
 
-      {/* Filters Card */}
+      {/* Products Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Filters</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col md:flex-row gap-4">
+          <CardTitle>Products ({filteredProducts.length})</CardTitle>
+          <div className="mt-4 flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <Input
                 placeholder="Search products..."
@@ -134,29 +202,42 @@ export default function AdminProductsPage() {
               />
             </div>
             <div className="w-full md:w-48">
-              <Select value={selectedCategory || "all"} onValueChange={handleCategoryChange}>
+              <Select
+                value={selectedCategory || "all"}
+                onValueChange={handleCategoryChange}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-60">
                   <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="electronics">Electronics</SelectItem>
-                  <SelectItem value="fashion">Fashion</SelectItem>
-                  <SelectItem value="home-garden">Home & Garden</SelectItem>
-                  <SelectItem value="sports">Sports</SelectItem>
-                  <SelectItem value="books">Books</SelectItem>
-                  <SelectItem value="beauty">Beauty</SelectItem>
+                  {categories.map((category) => (
+                    <SelectItem key={category._id} value={category._id}>
+                      {category.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="w-full md:w-48">
+              <Select
+                value={selectedCollection || "all"}
+                onValueChange={handleCollectionChange}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="All Collections" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Collections</SelectItem>
+                  {collections.map((collection) => (
+                    <SelectItem key={collection._id} value={collection._id}>
+                      {collection.title}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Products Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Products ({filteredProducts.length})</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border">
@@ -165,6 +246,7 @@ export default function AdminProductsPage() {
                 <TableRow>
                   <TableHead>Product</TableHead>
                   <TableHead>Category</TableHead>
+                  <TableHead>Collections</TableHead>
                   <TableHead>Price</TableHead>
                   <TableHead>Stock</TableHead>
                   <TableHead>Status</TableHead>
@@ -173,10 +255,7 @@ export default function AdminProductsPage() {
               </TableHeader>
               <TableBody>
                 {filteredProducts.map((product: any, index: number) => (
-                  <TableRow
-                    key={product?._id}
-                    className="group"
-                  >
+                  <TableRow key={product?._id} className="group">
                     <TableCell>
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
@@ -194,18 +273,33 @@ export default function AdminProductsPage() {
                         </div>
                         <div>
                           <div className="font-medium">{product?.title}</div>
-                          <div className="text-sm text-muted-foreground">{product?.slug}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {product?.slug}
+                          </div>
                         </div>
                       </motion.div>
                     </TableCell>
                     <TableCell>
                       <Badge variant="secondary">{product?.category}</Badge>
                     </TableCell>
-                    <TableCell className="font-medium">${product?.price}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap gap-1">
+                        {product?.collections?.map((col: Collection) => (
+                          <Badge key={col._id} variant="outline">
+                            {col.title}
+                          </Badge>
+                        ))}
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      ${product?.price}
+                    </TableCell>
                     <TableCell>{product?.inventory}</TableCell>
                     <TableCell>
                       <Badge
-                        variant={product?.inventory > 0 ? "default" : "destructive"}
+                        variant={
+                          product?.inventory > 0 ? "default" : "destructive"
+                        }
                       >
                         {product?.inventory > 0 ? "In Stock" : "Out of Stock"}
                       </Badge>
@@ -236,12 +330,15 @@ export default function AdminProductsPage() {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                               <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete the
-                                product "{product?.title}" from the database.
+                                This action cannot be undone. This will
+                                permanently delete the product "{product?.title}
+                                " from the database.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel onClick={() => setDeleteProductId(null)}>
+                              <AlertDialogCancel
+                                onClick={() => setDeleteProductId(null)}
+                              >
                                 Cancel
                               </AlertDialogCancel>
                               <AlertDialogAction
@@ -275,5 +372,5 @@ export default function AdminProductsPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

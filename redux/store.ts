@@ -7,6 +7,7 @@ import wishlistSlice from "./slices/wishlistSlice"
 import uiSlice from "./slices/uiSlice"
 import productsSlice from "./slices/productsSlice"
 import adminProductsSlice from "./slices/adminProductsSlice"
+import filtersSlice from "./slices/filtersSlice"
 
 const persistConfig = {
   key: "root",
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   ui: uiSlice,
   products: productsSlice,
   adminProducts: adminProductsSlice,
+  filters: filtersSlice,
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

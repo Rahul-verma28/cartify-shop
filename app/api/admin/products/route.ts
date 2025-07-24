@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import connectDB from "@/lib/db"
 import Product from "@/schemas/Product"
+import Collection from "@/schemas/Collection"
 import { authOptions } from "@/lib/auth"
 
 export async function GET(request: NextRequest) {
@@ -19,6 +20,7 @@ export async function GET(request: NextRequest) {
     const limit = Number.parseInt(searchParams.get("limit") || "50")
     const search = searchParams.get("search")
     const category = searchParams.get("category")
+    const collection = searchParams.get("collection")
 
     const query: any = {}
 
@@ -30,10 +32,19 @@ export async function GET(request: NextRequest) {
       query.category = category
     }
 
+    if (collection && collection !== "all") {
+      query.collections = collection
+    }
+
     const skip = (page - 1) * limit
 
     const [products, total] = await Promise.all([
-      Product?.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      Product?.find(query)
+        .populate("collections", "title")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
       Product?.countDocuments(query),
     ])
 
@@ -70,7 +81,9 @@ export async function POST(request: NextRequest) {
       !productData.slug ||
       !productData.description ||
       !productData.price ||
-      !productData.category
+      !productData.comparePrice ||
+      !productData.category||
+      !productData.images 
     ) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
@@ -83,6 +96,16 @@ export async function POST(request: NextRequest) {
 
     const product = new Product(productData)
     await product?.save()
+
+    if (productData.collections && productData.collections.length > 0) {
+      for (const collectionId of productData.collections) {
+        const collection = await Collection.findById(collectionId)
+        if (collection) {
+          collection.products.push(product._id)
+          await collection.save()
+        }
+      }
+    }
 
     return NextResponse.json({ product }, { status: 201 })
   } catch (error) {

@@ -7,6 +7,7 @@ interface AdminProductsState {
   error: string | null
   searchTerm: string
   selectedCategory: string
+  selectedCollection: string
   totalProducts: number
   currentPage: number
   itemsPerPage: number
@@ -18,6 +19,7 @@ const initialState: AdminProductsState = {
   error: null,
   searchTerm: "",
   selectedCategory: "",
+  selectedCollection: "",
   totalProducts: 0,
   currentPage: 1,
   itemsPerPage: 10,
@@ -113,6 +115,10 @@ const adminProductsSlice = createSlice({
       state.selectedCategory = action.payload
       state.currentPage = 1 // Reset to first page when filtering
     },
+    setSelectedCollection: (state, action: PayloadAction<string>) => {
+      state.selectedCollection = action.payload
+      state.currentPage = 1 // Reset to first page when filtering
+    },
     setCurrentPage: (state, action: PayloadAction<number>) => {
       state.currentPage = action.payload
     },
@@ -191,16 +197,24 @@ const adminProductsSlice = createSlice({
   },
 })
 
-export const { setSearchTerm, setSelectedCategory, setCurrentPage, setItemsPerPage, clearError } =
-  adminProductsSlice.actions
+export const {
+  setSearchTerm,
+  setSelectedCategory,
+  setSelectedCollection,
+  setCurrentPage,
+  setItemsPerPage,
+  clearError,
+} = adminProductsSlice.actions
 
 // Selectors
 export const selectFilteredProducts = (state: { adminProducts: AdminProductsState }) => {
-  const { products, searchTerm, selectedCategory } = state.adminProducts
+  const { products, searchTerm, selectedCategory, selectedCollection } = state.adminProducts
   return products.filter((product) => {
     const matchesSearch = product?.title.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesCategory = !selectedCategory || product?.category === selectedCategory
-    return matchesSearch && matchesCategory
+    const matchesCollection =
+      !selectedCollection || product?.collections?.some((col) => col._id === selectedCollection)
+    return matchesSearch && matchesCategory && matchesCollection
   })
 }
 

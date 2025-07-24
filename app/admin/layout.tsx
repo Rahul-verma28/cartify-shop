@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminHeader from "@/components/admin/AdminHeader";
+import { toast } from "sonner";
 
 export const metadata = {
   title: "Admin Dashboard - ModernShop",
@@ -18,7 +19,8 @@ export default async function AdminLayout({
   const session = await getServerSession(authOptions);
 
   if (!session || session.user.role !== "admin") {
-    redirect("/auth/signin");
+    toast.error("Unauthorized access. Please log in as an admin.");
+    return redirect("/auth/signin");
   }
 
   return (

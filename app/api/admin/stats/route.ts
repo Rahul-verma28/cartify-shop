@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
       Order.countDocuments({ createdAt: { $gte: previousMonth, $lt: currentMonth } }),
       User.countDocuments({ createdAt: { $gte: currentMonth } }),
       User.countDocuments({ createdAt: { $gte: previousMonth, $lt: currentMonth } }),
-      product?.countDocuments(),
+      Product?.countDocuments(),
     ])
 
     const currentRevenue = totalRevenue[0]?.total || 0
@@ -63,27 +63,27 @@ export async function GET(request: NextRequest) {
       {
         name: "Total Revenue",
         value: `$${currentRevenue.toLocaleString()}`,
-        change: `${revenueChange >= 0 ? "+" : ""}${revenueChange}%`,
-        changeType: revenueChange >= 0 ? "increase" : "decrease",
+        change: `${Number(revenueChange) >= 0 ? "+" : ""}${revenueChange}%`,
+        changeType: Number(revenueChange) >= 0 ? "increase" : "decrease",
         icon: "CurrencyDollarIcon",
       },
       {
         name: "Orders",
         value: totalOrders.toLocaleString(),
-        change: `${ordersChange >= 0 ? "+" : ""}${ordersChange}%`,
-        changeType: ordersChange >= 0 ? "increase" : "decrease",
+        change: `${Number(ordersChange) >= 0 ? "+" : ""}${ordersChange}%`,
+        changeType: Number(ordersChange) >= 0 ? "increase" : "decrease",
         icon: "ShoppingBagIcon",
       },
       {
         name: "Customers",
         value: totalCustomers.toLocaleString(),
-        change: `${customersChange >= 0 ? "+" : ""}${customersChange}%`,
-        changeType: customersChange >= 0 ? "increase" : "decrease",
+        change: `${Number(customersChange) >= 0 ? "+" : ""}${customersChange}%`,
+        changeType: Number(customersChange) >= 0 ? "increase" : "decrease",
         icon: "UsersIcon",
       },
       {
         name: "Products",
-        value: totalproducts?.toLocaleString(),
+        value: totalProducts?.toLocaleString(),
         change: "+5.2%",
         changeType: "increase",
         icon: "CubeIcon",
