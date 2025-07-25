@@ -1,10 +1,19 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { PlusIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline"
+import { 
+  Plus, 
+  Pencil, 
+  Trash, 
+  Folder, 
+  FolderTree, 
+  Search,
+  ImageIcon,
+  FolderPlus,
+  Link
+} from "lucide-react"
 import { toast } from "sonner"
 import {
   Dialog,
@@ -14,10 +23,30 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Card, CardContent } from "@/components/ui/card"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import type { Category } from "@/types"
 
 export default function AdminCategoriesPage() {
@@ -32,6 +61,8 @@ export default function AdminCategoriesPage() {
     image: "",
   })
   const [formLoading, setFormLoading] = useState(false)
+  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null)
+  const [searchTerm, setSearchTerm] = useState("")
 
   useEffect(() => {
     fetchCategories()
@@ -116,8 +147,6 @@ export default function AdminCategoriesPage() {
   }
 
   const handleDeleteCategory = async (categoryId: string) => {
-    if (!confirm("Are you sure you want to delete this category? This action cannot be undone.")) return
-
     try {
       const response = await fetch(`/api/admin/categories/${categoryId}`, {
         method: "DELETE",
@@ -132,167 +161,305 @@ export default function AdminCategoriesPage() {
       }
     } catch (error) {
       toast.error("Error deleting category")
+    } finally {
+      setCategoryToDelete(null)
+    }
+  }
+
+  const filteredCategories = categories.filter(category => 
+    category.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    category.slug.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (category.description && category.description.toLowerCase().includes(searchTerm.toLowerCase()))
+  )
+
+  // Category stats
+  const totalCategories = categories.length
+  const categoriesWithImages = categories.filter(cat => cat.image && cat.image.trim() !== "").length
+  const categoriesWithDescription = categories.filter(cat => cat.description && cat.description.trim() !== "").length
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  }
+  
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { type: "spring" as const, stiffness: 300, damping: 24 }
     }
   }
 
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-300 dark:bg-gray-600 rounded mb-4"></div>
-          <div className="h-64 bg-gray-300 dark:bg-gray-600 rounded"></div>
+        <div>
+          <Skeleton className="h-8 w-64 mb-2" />
+          <Skeleton className="h-4 w-96" />
         </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} className="h-28 rounded-lg" />
+          ))}
+        </div>
+        
+        <Skeleton className="h-12 w-full mb-4" />
+        <Skeleton className="h-64 w-full" />
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <motion.div 
+      className="space-y-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <motion.div variants={itemVariants} className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Categories</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Categories</h1>
           <p className="text-gray-600 dark:text-gray-400">Manage your product categories</p>
         </div>
         <Button onClick={() => handleOpenDialog()} className="flex items-center space-x-2">
-          <PlusIcon className="h-5 w-5" />
+          <Plus className="h-4 w-4 mr-1" />
           <span>Add Category</span>
         </Button>
-      </div>
+      </motion.div>
+
+      {/* Category Stats */}
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-3 gap-4"
+        variants={containerVariants}
+      >
+        <motion.div variants={itemVariants}>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Total Categories</p>
+                  <h3 className="text-2xl font-bold">{totalCategories}</h3>
+                </div>
+                <div className="p-2 bg-primary/10 rounded-full">
+                  <FolderTree className="h-6 w-6 text-primary" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+        
+        <motion.div variants={itemVariants}>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">With Images</p>
+                  <h3 className="text-2xl font-bold">{categoriesWithImages}</h3>
+                </div>
+                <div className="p-2 bg-blue-500/10 rounded-full">
+                  <ImageIcon className="h-6 w-6 text-blue-500" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+        
+        <motion.div variants={itemVariants}>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">With Description</p>
+                  <h3 className="text-2xl font-bold">{categoriesWithDescription}</h3>
+                </div>
+                <div className="p-2 bg-green-500/10 rounded-full">
+                  <FolderPlus className="h-6 w-6 text-green-500" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </motion.div>
+
+      {/* Search */}
+      <motion.div variants={itemVariants} className="flex items-center py-4">
+        <div className="relative w-full max-w-sm">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Search categories..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-8 w-full"
+          />
+        </div>
+      </motion.div>
 
       {/* Categories Table */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
-      >
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-800">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Title
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Slug
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Description
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {categories.map((category, index) => (
-                <motion.tr
-                  key={category._id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-800"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                    {category.title}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                    {category.slug}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 max-w-xs truncate">
-                    {category.description || "N/A"}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleOpenDialog(category)}
-                        className="text-primary-600 hover:text-primary-900"
-                      >
-                        <PencilIcon className="h-5 w-5" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeleteCategory(category._id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        <TrashIcon className="h-5 w-5" />
-                      </Button>
-                    </div>
-                  </td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {categories.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500 dark:text-gray-400">No categories found</p>
+      <motion.div variants={itemVariants}>
+        <Card>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Slug</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead>Image</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredCategories.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
+                      No categories found
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredCategories.map((category) => (
+                    <TableRow key={category._id} className="group">
+                      <TableCell className="font-medium">
+                        <div className="flex items-center gap-2">
+                          <Folder className="h-4 w-4 text-primary" />
+                          {category.title}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                          <Link className="h-3 w-3" />
+                          {category.slug}
+                        </div>
+                      </TableCell>
+                      <TableCell className="max-w-xs">
+                        <p className="text-muted-foreground truncate" title={category.description || ""}>
+                          {category.description || "N/A"}
+                        </p>
+                      </TableCell>
+                      <TableCell>
+                        {category.image ? (
+                          <div className="h-10 w-10 relative rounded-md overflow-hidden bg-gray-100 dark:bg-gray-800">
+                            <img 
+                              src={category.image} 
+                              alt={category.title} 
+                              className="object-cover h-full w-full" 
+                              onError={(e) => {
+                                e.currentTarget.src = "/placeholder.svg";
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground text-sm">No image</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end space-x-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleOpenDialog(category)}
+                            className="text-primary"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setCategoryToDelete(category)}
+                            className="text-red-500"
+                          >
+                            <Trash className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
           </div>
-        )}
+        </Card>
       </motion.div>
 
       {/* Add/Edit Category Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-white dark:bg-gray-900">
+      <Dialog open={isDialogOpen} onOpenChange={(open) => !open && handleCloseDialog()}>
+        <DialogContent className="sm:max-w-[525px] bg-white dark:bg-gray-900">
           <DialogHeader>
             <DialogTitle>{editingCategory ? "Edit Category" : "Add New Category"}</DialogTitle>
             <DialogDescription>
               {editingCategory ? "Make changes to this category." : "Add a new category to your store."}
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="title" className="text-right">
-                Title
+          <form onSubmit={handleSubmit} className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">
+                Title <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="title"
                 value={formData.title}
                 onChange={(e) => handleInputChange("title", e.target.value)}
-                className="col-span-3 input-field"
-                
+                required
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="slug" className="text-right">
-                Slug
+            <div className="space-y-2">
+              <Label htmlFor="slug">
+                Slug <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="slug"
                 value={formData.slug}
                 onChange={(e) => handleInputChange("slug", e.target.value)}
-                className="col-span-3 input-field"
-                
+                required
               />
+              <p className="text-sm text-muted-foreground">
+                URL-friendly name (automatically generated from title)
+              </p>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="description" className="text-right">
-                Description
-              </Label>
+            <div className="space-y-2">
+              <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => handleInputChange("description", e.target.value)}
-                className="col-span-3 input-field"
                 placeholder="Optional description for the category"
+                rows={3}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="image" className="text-right">
-                Image URL
-              </Label>
+            <div className="space-y-2">
+              <Label htmlFor="image">Image URL</Label>
               <Input
                 id="image"
                 value={formData.image}
                 onChange={(e) => handleInputChange("image", e.target.value)}
-                className="col-span-3 input-field"
                 placeholder="https://example.com/image.jpg"
               />
+              {formData.image && (
+                <div className="mt-2 flex items-center gap-2">
+                  <div className="h-10 w-10 relative rounded-md overflow-hidden bg-gray-100 dark:bg-gray-800">
+                    <img 
+                      src={formData.image} 
+                      alt="Preview" 
+                      className="object-cover h-full w-full" 
+                      onError={(e) => {
+                        e.currentTarget.src = "/placeholder.svg";
+                        toast.error("Invalid image URL");
+                      }}
+                    />
+                  </div>
+                  <span className="text-sm text-muted-foreground">Image preview</span>
+                </div>
+              )}
             </div>
-            <DialogFooter>
+            <DialogFooter className="pt-4">
               <Button type="button" variant="outline" onClick={handleCloseDialog}>
                 Cancel
               </Button>
@@ -303,6 +470,27 @@ export default function AdminCategoriesPage() {
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!categoryToDelete} onOpenChange={(open) => !open && setCategoryToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete the category "{categoryToDelete?.title}". This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => categoryToDelete && handleDeleteCategory(categoryToDelete._id)}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </motion.div>
   )
 }

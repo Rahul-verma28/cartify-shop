@@ -98,42 +98,47 @@ export default function DashboardStats() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {displayStats.map((stat, index) => (
-        <motion.div
-          key={stat.name}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: index * 0.1 }}
-        >
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{stat.name}</CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground flex items-center">
-                {stat.changeType === "increase" ? (
-                  <ArrowUp className="h-4 w-4 text-green-500 mr-1" />
-                ) : (
-                  <ArrowDown className="h-4 w-4 text-red-500 mr-1" />
-                )}
-                <span
-                  className={cn(
-                    "font-medium",
-                    stat.changeType === "increase"
-                      ? "text-green-600"
-                      : "text-red-600"
+      {displayStats.map((stat, index) => {
+        const Icon = stat.icon;
+        return (
+          <motion.div
+            key={stat.name}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+          >
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  {stat.name}
+                </CardTitle>
+                <Icon className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stat.value}</div>
+                <p className="text-xs text-muted-foreground flex items-center">
+                  {stat.changeType === "increase" ? (
+                    <ArrowUp className="h-4 w-4 text-green-500 mr-1" />
+                  ) : (
+                    <ArrowDown className="h-4 w-4 text-red-500 mr-1" />
                   )}
-                >
-                  {stat.change}
-                </span>
-                <span className="ml-1">from last month</span>
-              </p>
-            </CardContent>
-          </Card>
-        </motion.div>
-      ))}
+                  <span
+                    className={cn(
+                      "font-medium",
+                      stat.changeType === "increase"
+                        ? "text-green-600"
+                        : "text-red-600"
+                    )}
+                  >
+                    {stat.change}
+                  </span>
+                  <span className="ml-1">from last month</span>
+                </p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        );
+      })}
     </div>
   );
 }

@@ -1,10 +1,19 @@
 "use client";
 
 import type React from "react";
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { PlusIcon, PencilIcon, TrashIcon, EyeIcon } from "lucide-react";
+import {
+  Plus,
+  Pencil,
+  Trash,
+  Eye,
+  Search,
+  Library,
+  Layers,
+  Tag,
+  ImageIcon,
+} from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -39,6 +48,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Collection, Product } from "@/types";
 
 export default function AdminCollectionsPage() {
@@ -63,6 +74,27 @@ export default function AdminCollectionsPage() {
     image: "",
   });
   const [formLoading, setFormLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring" as const, stiffness: 300, damping: 24 },
+    },
+  };
 
   useEffect(() => {
     fetchCollections();
@@ -203,21 +235,58 @@ export default function AdminCollectionsPage() {
     }
   };
 
+  // Stats calculations
+  const totalProducts = collections.reduce(
+    (sum, collection) => sum + (collection.products?.length || 0),
+    0
+  );
+
+  const collectionsWithImages = collections.filter(
+    (collection) => collection.image && collection.image.trim() !== ""
+  ).length;
+
+  const collectionsWithDescription = collections.filter(
+    (collection) =>
+      collection.description && collection.description.trim() !== ""
+  ).length;
+
+  // Filter collections based on search
+  const filteredCollections = collections.filter((collection) =>
+    collection.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="animate-pulse">
-          <div className="h-8 bg-muted rounded mb-4"></div>
-          <div className="h-64 bg-muted rounded"></div>
+        <div>
+          <Skeleton className="h-8 w-64 mb-2" />
+          <Skeleton className="h-4 w-96" />
         </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} className="h-28 rounded-lg" />
+          ))}
+        </div>
+
+        <Skeleton className="h-12 w-full mb-4" />
+        <Skeleton className="h-64 w-full" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <motion.div
+        variants={itemVariants}
+        className="flex justify-between items-center"
+      >
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Collections</h1>
           <p className="text-muted-foreground">
@@ -225,136 +294,275 @@ export default function AdminCollectionsPage() {
           </p>
         </div>
         <Button onClick={() => handleOpenDialog()}>
-          <PlusIcon className="mr-2 h-4 w-4" />
+          <Plus className="mr-2 h-4 w-4" />
           Add Collection
         </Button>
-      </div>
+      </motion.div>
 
-      {/* Collections Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Collections ({collections.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Image</TableHead>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Products</TableHead>
-                  <TableHead className="text-center">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {collections.map((collection, index) => (
-                  <TableRow key={collection._id} className="group">
-                    <TableCell>
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3, delay: index * 0.05 }}
-                        className="w-12 h-12 relative rounded-lg overflow-hidden bg-muted"
-                      >
+      {/* Statistics Cards */}
+      <motion.div
+        className="grid grid-cols-1 md:grid-cols-3 gap-4"
+        variants={containerVariants}
+      >
+        <motion.div variants={itemVariants}>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Collections
+                  </p>
+                  <h3 className="text-2xl font-bold">{collections.length}</h3>
+                </div>
+                <div className="p-2 bg-primary/10 rounded-full">
+                  <Library className="h-6 w-6 text-primary" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Products
+                  </p>
+                  <h3 className="text-2xl font-bold">{totalProducts}</h3>
+                </div>
+                <div className="p-2 bg-blue-500/10 rounded-full">
+                  <Layers className="h-6 w-6 text-blue-500" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    With Images
+                  </p>
+                  <h3 className="text-2xl font-bold">
+                    {collectionsWithImages}
+                  </h3>
+                </div>
+                <div className="p-2 bg-green-500/10 rounded-full">
+                  <ImageIcon className="h-6 w-6 text-green-500" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </motion.div>
+
+      {/* Search */}
+      <motion.div variants={itemVariants} className="flex items-center py-4">
+        <div className="relative w-full max-w-sm">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Search collections..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-8 w-full"
+          />
+        </div>
+      </motion.div>
+
+      {/* Collections Content */}
+      <motion.div variants={itemVariants}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Collections ({filteredCollections.length})</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="table" className="mb-4">
+              <TabsList>
+                <TabsTrigger value="table">Table View</TabsTrigger>
+                <TabsTrigger value="grid">Grid View</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="grid" className="pt-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {filteredCollections.map((collection, index) => (
+                    <motion.div
+                      key={collection._id}
+                      variants={itemVariants}
+                      transition={{ delay: index * 0.05 }}
+                      className="border rounded-lg overflow-hidden group hover:shadow-md transition-shadow"
+                    >
+                      <div className="aspect-video relative">
                         <img
                           src={collection.image || "/placeholder.svg"}
                           alt={collection.title}
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = "/placeholder.svg";
+                          }}
                         />
-                      </motion.div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="font-medium">{collection.title}</div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="max-w-xs truncate">
-                        {collection.description || "No description"}
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => handleOpenViewDialog(collection)}
+                          >
+                            <Eye className="h-4 w-4 mr-1" /> View
+                          </Button>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => handleOpenDialog(collection)}
+                          >
+                            <Pencil className="h-4 w-4 mr-1" /> Edit
+                          </Button>
+                        </div>
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">
-                        {collection.products?.length || 0} products
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center justify-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleOpenViewDialog(collection)}
-                        >
-                          <EyeIcon className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleOpenDialog(collection)}
-                        >
-                          <PencilIcon className="h-4 w-4" />
-                        </Button>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() =>
-                                setDeleteCollectionId(collection._id)
-                              }
-                            >
-                              <TrashIcon className="h-4 w-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This action cannot be undone. This will
-                                permanently delete the collection "
-                                {collection.title}" from the database.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel
-                                onClick={() => setDeleteCollectionId(null)}
-                              >
-                                Cancel
-                              </AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={handleDeleteCollection}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                              >
-                                Delete
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                      <div className="p-4">
+                        <h3 className="font-medium truncate">
+                          {collection.title}
+                        </h3>
+                        <div className="flex justify-between items-center mt-2">
+                          <Badge variant="secondary">
+                            {collection.products?.length || 0} products
+                          </Badge>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-red-500 h-8 w-8 p-0"
+                            onClick={() =>
+                              setDeleteCollectionId(collection._id)
+                            }
+                          >
+                            <Trash className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </TabsContent>
 
-          {collections.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">No collections found</p>
-              <Button
-                variant="outline"
-                className="mt-4"
-                onClick={() => handleOpenDialog()}
-              >
-                <PlusIcon className="mr-2 h-4 w-4" />
-                Add your first collection
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+              <TabsContent value="table">
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Image</TableHead>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Description</TableHead>
+                        <TableHead>Products</TableHead>
+                        <TableHead className="text-center">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredCollections.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={5} className="text-center h-32">
+                            <p className="text-muted-foreground">
+                              No collections found
+                            </p>
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        filteredCollections.map((collection) => (
+                          <TableRow key={collection._id} className="group">
+                            <TableCell>
+                              <div className="w-12 h-12 relative rounded-lg overflow-hidden bg-muted">
+                                <img
+                                  src={collection.image || "/placeholder.svg"}
+                                  alt={collection.title}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    e.currentTarget.src = "/placeholder.svg";
+                                  }}
+                                />
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="font-medium">
+                                {collection.title}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {collection.slug}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="max-w-xs truncate">
+                                {collection.description || "No description"}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="secondary">
+                                {collection.products?.length || 0} products
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center justify-center gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    handleOpenViewDialog(collection)
+                                  }
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleOpenDialog(collection)}
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-red-500"
+                                  onClick={() =>
+                                    setDeleteCollectionId(collection._id)
+                                  }
+                                >
+                                  <Trash className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </TabsContent>
+            </Tabs>
+
+            {collections.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">No collections found</p>
+                <Button
+                  variant="outline"
+                  className="mt-4"
+                  onClick={() => handleOpenDialog()}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add your first collection
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {/* Add/Edit Collection Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog
+        open={isDialogOpen}
+        onOpenChange={(open) => !open && handleCloseDialog()}
+      >
         <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
@@ -366,57 +574,70 @@ export default function AdminCollectionsPage() {
                 : "Add a new collection to your store."}
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="title"  >
-                Title
+          <form onSubmit={handleSubmit} className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">
+                Title <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="title"
                 value={formData.title}
                 onChange={(e) => handleInputChange("title", e.target.value)}
-                className="col-span-3"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="slug"  >
-                Slug
+            <div className="space-y-2">
+              <Label htmlFor="slug">
+                Slug <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="slug"
                 value={formData.slug}
                 onChange={(e) => handleInputChange("slug", e.target.value)}
-                className="col-span-3"
               />
+              <p className="text-xs text-muted-foreground">
+                URL-friendly name (auto-generated from title)
+              </p>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="description"  >
-                Description
-              </Label>
+            <div className="space-y-2">
+              <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) =>
                   handleInputChange("description", e.target.value)
                 }
-                className="col-span-3"
                 placeholder="Optional description for the collection"
+                rows={3}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="image"  >
-                Image URL
-              </Label>
+            <div className="space-y-2">
+              <Label htmlFor="image">Image URL</Label>
               <Input
                 id="image"
                 value={formData.image}
                 onChange={(e) => handleInputChange("image", e.target.value)}
-                className="col-span-3"
                 placeholder="https://example.com/image.jpg"
               />
+              {formData.image && (
+                <div className="mt-2 flex items-center gap-2">
+                  <div className="h-10 w-10 relative rounded-md overflow-hidden bg-muted">
+                    <img
+                      src={formData.image}
+                      alt="Preview"
+                      className="object-cover h-full w-full"
+                      onError={(e) => {
+                        e.currentTarget.src = "/placeholder.svg";
+                        toast.error("Invalid image URL");
+                      }}
+                    />
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    Image preview
+                  </span>
+                </div>
+              )}
             </div>
-
-            <DialogFooter>
+            <DialogFooter className="mt-6">
               <Button
                 type="button"
                 variant="outline"
@@ -531,6 +752,35 @@ export default function AdminCollectionsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+
+      {/* Delete Confirmation */}
+      <AlertDialog
+        open={!!deleteCollectionId}
+        onOpenChange={(open) => !open && setDeleteCollectionId(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              collection "
+              {collections.find((c) => c._id === deleteCollectionId)?.title}"
+              from the database.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteCollectionId(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteCollection}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </motion.div>
   );
 }

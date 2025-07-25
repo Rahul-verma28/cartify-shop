@@ -53,9 +53,14 @@ export default function AdminSidebar() {
         collapsed ? "w-16" : "w-64"
       )}
     >
-      <div className="p-4 flex items-center justify-between h-[65px] border-b">
+      <div className="p-4 flex items-center justify-between border-b">
         {!collapsed && (
-          <h2 className="text-lg font-semibold tracking-tight">ModernShop</h2>
+          <div className="flex items-center justify-center gap-3">
+            <span className="text-primary-foreground font-bold text-lg w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              M
+            </span>
+            <h2 className="text-lg font-semibold tracking-tight">ModernShop</h2>
+          </div>
         )}
         <Button
           variant="ghost"
@@ -64,9 +69,9 @@ export default function AdminSidebar() {
           className="ml-auto"
         >
           {collapsed ? (
-            <PanelLeftOpen className="h-5 w-5" />
+            <PanelLeftOpen className="h-5 w-5 flex-shrink-0" />
           ) : (
-            <PanelLeftClose className="h-5 w-5" />
+            <PanelLeftClose className="h-5 w-5 flex-shrink-0" />
           )}
         </Button>
       </div>

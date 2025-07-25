@@ -32,11 +32,6 @@ export default function AdminHeader() {
       <div className="px-6 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">
-                M
-              </span>
-            </div>
             <div>
               <h1 className="text-xl font-semibold">Admin Dashboard</h1>
               <p className="text-sm text-muted-foreground">

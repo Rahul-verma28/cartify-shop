@@ -2,7 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { PlusIcon, PencilIcon, TrashIcon, EyeIcon } from "lucide-react";
+import {
+  Plus as PlusIcon,
+  Pencil as PencilIcon,
+  Trash as TrashIcon,
+  Eye as EyeIcon,
+  Search,
+  Package,
+  DollarSign,
+  ShoppingBag,
+  Tag,
+} from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -17,10 +27,7 @@ import {
   setSelectedCollection,
   selectFilteredProducts,
 } from "@/redux/slices/adminProductsSlice";
-import {
-  fetchCollections,
-  fetchCategories,
-} from "@/redux/slices/filtersSlice";
+import { fetchCollections, fetchCategories } from "@/redux/slices/filtersSlice";
 
 // shadcn UI imports
 import { Button } from "@/components/ui/button";
@@ -102,7 +109,35 @@ export default function AdminProductsPage() {
     dispatch(setSelectedCollection(value === "all" ? "" : value));
   };
 
-  console.log("Filtered Products:", filteredProducts);
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring" as const, stiffness: 300, damping: 24 },
+    },
+  };
+
+  // Calculate product stats
+  const totalProducts = filteredProducts.length;
+  const totalValue = filteredProducts.reduce(
+    (sum, product) => sum + product.price * product.inventory,
+    0
+  );
+  const outOfStockCount = filteredProducts.filter(
+    (product) => product.inventory <= 0
+  ).length;
 
   if (loading) {
     return (
@@ -174,9 +209,17 @@ export default function AdminProductsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <motion.div
+        variants={itemVariants}
+        className="flex justify-between items-center"
+      >
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Products</h1>
           <p className="text-muted-foreground">Manage your product inventory</p>
@@ -187,74 +230,145 @@ export default function AdminProductsPage() {
             Add Product
           </Link>
         </Button>
-      </div>
+      </motion.div>
+
+      {/* Statistics Cards */}
+      <motion.div
+        className="grid grid-cols-1 md:grid-cols-3 gap-4"
+        variants={containerVariants}
+      >
+        <motion.div variants={itemVariants}>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Total Products
+                  </p>
+                  <h3 className="text-2xl font-bold">{totalProducts}</h3>
+                </div>
+                <div className="p-2 bg-primary/10 rounded-full">
+                  <Package className="h-6 w-6 text-primary" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Inventory Value
+                  </p>
+                  <h3 className="text-2xl font-bold">
+                    ${totalValue.toFixed(2)}
+                  </h3>
+                </div>
+                <div className="p-2 bg-green-500/10 rounded-full">
+                  <DollarSign className="h-6 w-6 text-green-500" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Out of Stock
+                  </p>
+                  <h3 className="text-2xl font-bold">{outOfStockCount}</h3>
+                </div>
+                <div className="p-2 bg-red-500/10 rounded-full">
+                  <ShoppingBag className="h-6 w-6 text-red-500" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </motion.div>
 
       {/* Products Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Products ({filteredProducts.length})</CardTitle>
-          <div className="mt-4 flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <Input
-                placeholder="Search products..."
-                value={searchTerm}
-                onChange={(e) => handleSearchChange(e.target.value)}
-              />
-            </div>
-            <div className="w-full md:w-48">
-              <Select
-                value={selectedCategory || "all"}
-                onValueChange={handleCategoryChange}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="All Categories" />
-                </SelectTrigger>
-                <SelectContent className="max-h-60">
-                  <SelectItem value="all">All Categories</SelectItem>
-                  {categories.map((category) => (
-                    <SelectItem key={category._id} value={category._id}>
-                      {category.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="w-full md:w-48">
-              <Select
-                value={selectedCollection || "all"}
-                onValueChange={handleCollectionChange}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="All Collections" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Collections</SelectItem>
-                  {collections.map((collection) => (
-                    <SelectItem key={collection._id} value={collection._id}>
-                      {collection.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+      <motion.div variants={itemVariants} className="space-y-6">
+        <div className="mt-4 flex flex-col md:flex-row gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search products..."
+              value={searchTerm}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              className="pl-8"
+            />
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
+          <div className="w-full md:w-48">
+            <Select
+              value={selectedCategory || "all"}
+              onValueChange={handleCategoryChange}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="All Categories" />
+              </SelectTrigger>
+              <SelectContent className="max-h-60">
+                <SelectItem value="all">All Categories</SelectItem>
+                {categories.map((category) => (
+                  <SelectItem key={category._id} value={category._id}>
+                    {category.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="w-full md:w-48">
+            <Select
+              value={selectedCollection || "all"}
+              onValueChange={handleCollectionChange}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="All Collections" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Collections</SelectItem>
+                {collections.map((collection) => (
+                  <SelectItem key={collection._id} value={collection._id}>
+                    {collection.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Product</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Collections</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead>Stock</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredProducts.length === 0 ? (
                 <TableRow>
-                  <TableHead>Product</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Collections</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Stock</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableCell
+                    colSpan={7}
+                    className="text-center py-6 text-muted-foreground"
+                  >
+                    No products found
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredProducts.map((product: any, index: number) => (
+              ) : (
+                filteredProducts.map((product: any, index: number) => (
                   <TableRow key={product?._id} className="group">
                     <TableCell>
                       <motion.div
@@ -292,7 +406,7 @@ export default function AdminProductsPage() {
                       </div>
                     </TableCell>
                     <TableCell className="font-medium">
-                      ${product?.price}
+                      ${parseFloat(product?.price).toFixed(2)}
                     </TableCell>
                     <TableCell>{product?.inventory}</TableCell>
                     <TableCell>
@@ -305,7 +419,7 @@ export default function AdminProductsPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-end gap-2 transition-opacity">
                         <Button variant="ghost" size="sm" asChild>
                           <Link href={`/products/${product?.slug}`}>
                             <EyeIcon className="h-4 w-4" />
@@ -353,24 +467,24 @@ export default function AdminProductsPage() {
                       </div>
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
 
-          {filteredProducts.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">No products found</p>
-              <Button variant="outline" className="mt-4" asChild>
-                <Link href="/admin/products/new">
-                  <PlusIcon className="mr-2 h-4 w-4" />
-                  Add your first product
-                </Link>
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+        {filteredProducts.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">No products found</p>
+            <Button variant="outline" className="mt-4" asChild>
+              <Link href="/admin/products/new">
+                <PlusIcon className="mr-2 h-4 w-4" />
+                Add your first product
+              </Link>
+            </Button>
+          </div>
+        )}
+      </motion.div>
+    </motion.div>
   );
 }
