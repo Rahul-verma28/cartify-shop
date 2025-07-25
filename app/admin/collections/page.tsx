@@ -50,7 +50,7 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { Collection, Product } from "@/types";
+import type { Collection, Product } from "@/lib/types";
 
 export default function AdminCollectionsPage() {
   const [collections, setCollections] = useState<Collection[]>([]);

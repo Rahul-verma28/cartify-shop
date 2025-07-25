@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { motion } from "framer-motion"
-import type { CartItem } from "@/types"
+import type { CartItem } from "@/lib/types"
 
 interface OrderSummaryProps {
   items: CartItem[]

@@ -1,8 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import Stripe from "stripe"
-import connectDB from "@/lib/db"
-import Order from "@/schemas/Order"
+import connectDB from "@/lib/mongoDB"
+import Order from "@/lib/models/Order"
 import { authOptions } from "@/lib/auth"
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {

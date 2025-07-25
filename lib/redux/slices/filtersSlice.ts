@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import type { Collection, Category } from "@/types";
+import type { Collection, Category } from "@/lib/types";
 
 interface FiltersState {
   collections: Collection[];

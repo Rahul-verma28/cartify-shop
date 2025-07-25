@@ -6,7 +6,7 @@ import { Trash, Star, Search, MessageSquare, AlertTriangle } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { toast } from "sonner"
-import type { Review } from "@/types"
+import type { Review } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
@@ -338,7 +338,7 @@ export default function AdminReviewsPage() {
                               />
                             </div>
                             <div className="ml-3 font-medium truncate max-w-[150px]">
-                              <Link href={`/admin/products/${review?.product?._id}`} className="hover:text-primary">
+                              <Link href={`/products/${review?.product?.slug}`} className="hover:text-primary">
                                 {review?.product?.title || "Unknown Product"}
                               </Link>
                             </div>

@@ -10,14 +10,14 @@ import { Upload, X, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
 
 // Redux imports
-import { useAppDispatch } from "@/hooks/use-redux";
+import { useAppDispatch } from "@/lib/hooks/use-redux";
 import {
   createAdminProduct,
   updateAdminProduct,
-} from "@/redux/slices/adminProductsSlice";
+} from "@/lib/redux/slices/adminProductsSlice";
 
 // Helper imports
-import { createMultipleImageUrls } from "@/helper/getImageUrl";
+import { createMultipleImageUrls } from "@/lib/helper/getImageUrl";
 
 // shadcn UI imports
 import { Button } from "@/components/ui/button";

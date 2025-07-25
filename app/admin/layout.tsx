@@ -4,7 +4,20 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminHeader from "@/components/admin/AdminHeader";
-import { toast } from "sonner";
+import { Providers } from "@/components/providers/Providers";
+import { Geist, Geist_Mono } from "next/font/google";
+import "../globals.css";
+import { Toaster } from "sonner";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
 export const metadata = {
   title: "Admin Dashboard - ModernShop",
@@ -13,23 +26,36 @@ export const metadata = {
 
 export default async function AdminLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   const session = await getServerSession(authOptions);
 
-  if (!session || session.user.role !== "admin") {
-    toast.error("Unauthorized access. Please log in as an admin.");
-    return redirect("/auth/signin");
+  // Check if user is authenticated and has admin role
+  if (!session) {
+    redirect("/auth/signin");
+  }
+
+  if (session?.user?.role !== "admin") {
+    redirect("/");
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-950">
-        <AdminSidebar />
-        <main className="flex-1 flex-col h-screen">
-          <AdminHeader />
-          <div className="p-6">{children}</div>
-        </main>
-    </div>
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <Providers>
+          <div className="flex bg-gray-50 dark:bg-gray-950">
+            <AdminSidebar />
+            <main className="flex-1 flex-col h-screen">
+              <AdminHeader />
+              <div className="p-6">{children}</div>
+            </main>
+          </div>
+        </Providers>
+        <Toaster position="top-right" richColors />
+      </body>
+    </html>
   );
 }

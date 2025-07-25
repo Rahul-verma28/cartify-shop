@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import type { Order } from "@/types";
+import type { Order } from "@/lib/types";
 import {
   Card,
   CardContent,

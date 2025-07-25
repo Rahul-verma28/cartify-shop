@@ -18,7 +18,7 @@ import Image from "next/image";
 import { toast } from "sonner";
 
 // Redux imports
-import { useAppDispatch, useAppSelector } from "@/hooks/use-redux";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks/use-redux";
 import {
   fetchAdminProducts,
   deleteAdminProduct,
@@ -26,8 +26,8 @@ import {
   setSelectedCategory,
   setSelectedCollection,
   selectFilteredProducts,
-} from "@/redux/slices/adminProductsSlice";
-import { fetchCollections, fetchCategories } from "@/redux/slices/filtersSlice";
+} from "@/lib/redux/slices/adminProductsSlice";
+import { fetchCollections, fetchCategories } from "@/lib/redux/slices/filtersSlice";
 
 // shadcn UI imports
 import { Button } from "@/components/ui/button";
@@ -61,7 +61,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { Collection, Category } from "@/types";
+import type { Collection, Category } from "@/lib/types";
 
 export default function AdminProductsPage() {
   const dispatch = useAppDispatch();

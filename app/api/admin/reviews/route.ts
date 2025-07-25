@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
-import connectDB from "@/lib/db"
-import Review from "@/schemas/Review"
+import connectDB from "@/lib/mongoDB"
+import Review from "@/lib/models/Review"
 import { authOptions } from "@/lib/auth"
 
 export async function GET(request: NextRequest) {

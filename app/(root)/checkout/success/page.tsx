@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 import { useDispatch } from "react-redux"
-import { clearCart } from "@/redux/slices/cartSlice"
+import { clearCart } from "@/lib/redux/slices/cartSlice"
 
 export default function CheckoutSuccessPage() {
   const searchParams = useSearchParams()

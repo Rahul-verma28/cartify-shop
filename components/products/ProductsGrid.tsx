@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
-import type { RootState } from "@/redux/store"
-import { setProducts, setLoading, setError } from "@/redux/slices/productsSlice"
+import type { RootState } from "@/lib/redux/store"
+import { setProducts, setLoading, setError } from "@/lib/redux/slices/productsSlice"
 import ProductCard from "@/components/ProductCard"
-import type { Product } from "@/types"
+import type { Product } from "@/lib/types"
 import { motion } from "framer-motion"
 
 export default function ProductsGrid() {

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { toast } from "sonner"
 import ProductForm from "@/components/admin/ProductForm"
-import type { Product } from "@/types"
+import type { Product } from "@/lib/types"
 
 export default function NewProductPage() {
   const router = useRouter()

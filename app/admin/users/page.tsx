@@ -16,7 +16,7 @@ import {
   UserX
 } from "lucide-react"
 import { toast } from "sonner"
-import type { User } from "@/types"
+import type { User } from "@/lib/types"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"

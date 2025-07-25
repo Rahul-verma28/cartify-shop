@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
-import connectDB from "@/lib/db"
-import Collection from "@/schemas/Collection"
+import connectDB from "@/lib/mongoDB"
+import Collection from "@/lib/models/Collection"
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ collectionId: string }> }) {
   try {

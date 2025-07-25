@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
-import connectDB from "@/lib/db"
-import User from "@/schemas/User"
+import connectDB from "@/lib/mongoDB"
+import User from "@/lib/models/User"
 
 export async function POST(request: NextRequest) {
   try {

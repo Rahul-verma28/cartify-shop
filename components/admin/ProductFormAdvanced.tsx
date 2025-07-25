@@ -8,8 +8,8 @@ import { z } from "zod"
 import { toast } from "sonner"
 
 // Redux imports
-import { useAppDispatch } from "@/hooks/use-redux"
-import { createAdminProduct, updateAdminProduct } from "@/redux/slices/adminProductsSlice"
+import { useAppDispatch } from "@/lib/hooks/use-redux"
+import { createAdminProduct, updateAdminProduct } from "@/lib/redux/slices/adminProductsSlice"
 
 // shadcn UI imports
 import { Button } from "@/components/ui/button"

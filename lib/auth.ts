@@ -4,8 +4,8 @@ import GoogleProvider from "next-auth/providers/google"
 import { MongoDBAdapter } from "@auth/mongodb-adapter"
 import { MongoClient } from "mongodb"
 import bcrypt from "bcryptjs"
-import connectDB from "./db"
-import User from "@/schemas/User"
+import connectDB from "./mongoDB"
+import User from "@/lib/models/User"
 
 // Extend NextAuth types
 declare module "next-auth" {

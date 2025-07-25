@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
-import connectDB from "@/lib/db"
-import Product from "@/schemas/Product"
+import connectDB from "@/lib/mongoDB"
+import Product from "@/lib/models/Product"
 
 export async function GET(request: NextRequest) {
   try {

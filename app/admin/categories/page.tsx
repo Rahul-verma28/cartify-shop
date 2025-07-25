@@ -47,7 +47,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import type { Category } from "@/types"
+import type { Category } from "@/lib/types"
 
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([])

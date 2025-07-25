@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/command";
 
 import { toast } from "sonner";
-import type { Product, Collection } from "@/types";
+import type { Product, Collection } from "@/lib/types";
 
 interface ProductFormProps {
   product?: Partial<Product>;

@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { SessionUser } from "@/types";
+import { SessionUser } from "@/lib/types";
 
 type SessionType = {
   user: SessionUser;

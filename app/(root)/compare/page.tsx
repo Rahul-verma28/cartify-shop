@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
-import type { Product } from "@/types"
+import type { Product } from "@/lib/types"
 import ProductComparison from "@/components/compare/ProductComparison"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"

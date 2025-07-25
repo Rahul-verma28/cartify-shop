@@ -1,8 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
-import connectDB from "@/lib/db"
-import Review from "@/schemas/Review"
-import Product from "@/schemas/Product"
+import connectDB from "@/lib/mongoDB"
+import Review from "@/lib/models/Review"
+import Product from "@/lib/models/Product"
 import { authOptions } from "@/lib/auth"
 
 export async function DELETE(request: NextRequest, { params }: { params: { reviewId: string } }) {

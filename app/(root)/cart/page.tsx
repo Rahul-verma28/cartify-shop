@@ -2,8 +2,8 @@
 
 import { useSelector, useDispatch } from "react-redux"
 import { motion } from "framer-motion"
-import type { RootState } from "@/redux/store"
-import { removeFromCart, updateQuantity, clearCart } from "@/redux/slices/cartSlice"
+import type { RootState } from "@/lib/redux/store"
+import { removeFromCart, updateQuantity, clearCart } from "@/lib/redux/slices/cartSlice"
 import CartItem from "@/components/cart/CartItem"
 import CartSummary from "@/components/cart/CartSummary"
 import RecommendedProducts from "@/components/cart/RecommendedProducts"

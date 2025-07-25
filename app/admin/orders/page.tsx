@@ -42,7 +42,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
-import type { Order } from "@/types"
+import type { Order } from "@/lib/types"
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([])

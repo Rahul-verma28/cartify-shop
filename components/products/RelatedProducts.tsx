@@ -1,5 +1,5 @@
-import connectDB from "@/lib/db"
-import Product from "@/schemas/Product"
+import connectDB from "@/lib/mongoDB"
+import Product from "@/lib/models/Product"
 import ProductCard from "@/components/ProductCard"
 
 interface RelatedProductsProps {

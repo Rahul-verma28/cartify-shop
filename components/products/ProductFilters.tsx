@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import type { RootState } from "@/redux/store"
-import { updateFilters, resetFilters } from "@/redux/slices/productsSlice"
+import type { RootState } from "@/lib/redux/store"
+import { updateFilters, resetFilters } from "@/lib/redux/slices/productsSlice"
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline"
 
 const categories = ["Electronics", "Fashion", "Home & Garden", "Sports", "Books", "Beauty", "Toys", "Automotive"]

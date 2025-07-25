@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import type { Address } from "@/types"
+import type { Address } from "@/lib/types"
 
 interface CheckoutFormProps {
   onSubmit: (data: Address) => void

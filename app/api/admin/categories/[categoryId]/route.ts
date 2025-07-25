@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
-import connectDB from "@/lib/db"
-import Category from "@/schemas/Category"
+import connectDB from "@/lib/mongoDB"
+import Category from "@/lib/models/Category"
 import { authOptions } from "@/lib/auth"
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ categoryId: string }> }) {

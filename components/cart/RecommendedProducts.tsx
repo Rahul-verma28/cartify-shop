@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import type { Product, CartItem } from "@/types"
+import type { Product, CartItem } from "@/lib/types"
 import ProductCard from "@/components/ProductCard"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Sparkles } from "lucide-react"
