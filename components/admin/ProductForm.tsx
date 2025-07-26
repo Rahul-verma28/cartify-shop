@@ -34,9 +34,12 @@ import {
   CommandInput,
   CommandItem,
 } from "@/components/ui/command";
+import ImageUpload from "@/components/ui/image-upload";
 
 import { toast } from "sonner";
 import type { Product, Collection } from "@/lib/types";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks/use-redux";
+import { fetchCollections, fetchCategories } from "@/lib/redux/slices/filtersSlice";
 
 interface ProductFormProps {
   product?: Partial<Product>;
@@ -72,7 +75,11 @@ export default function ProductForm({
   onSubmit,
   loading,
 }: ProductFormProps) {
-  const [collections, setCollections] = useState<Collection[]>([]);
+  const dispatch = useAppDispatch();
+  const { collections, categories: reduxCategories } = useAppSelector(
+    (state) => state.filters
+  );
+
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     title: product?.title || "",
@@ -91,23 +98,11 @@ export default function ProductForm({
   });
 
   const [newTag, setNewTag] = useState("");
-  const [newImage, setNewImage] = useState("");
 
   useEffect(() => {
-    fetchCollections();
-  }, []);
-
-  const fetchCollections = async () => {
-    try {
-      const response = await fetch("/api/admin/collections");
-      if (response.ok) {
-        const data = await response.json();
-        setCollections(data.collections || []);
-      }
-    } catch (error) {
-      console.error("Error fetching collections:", error);
-    }
-  };
+    dispatch(fetchCollections());
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -143,6 +138,28 @@ export default function ProductForm({
     }
   };
 
+  const handleImageChange = (
+    field: string,
+    value: any | ((prev: any) => any)
+  ) => {
+    setFormData((prev) => {
+      const updatedValue =
+        typeof value === "function" ? value(prev[field]) : value;
+
+      const updatedForm = { ...prev, [field]: updatedValue };
+
+      if (field === "title") {
+        const slug = updatedForm.title
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "");
+        updatedForm.slug = slug;
+      }
+
+      return updatedForm;
+    });
+  };
+
   const addTag = () => {
     const tagValue = newTag.trim();
     if (tagValue && !formData.tags.includes(tagValue)) {
@@ -158,31 +175,6 @@ export default function ProductForm({
     setFormData((prev) => ({
       ...prev,
       tags: prev.tags.filter((tag) => tag !== tagToRemove),
-    }));
-  };
-
-  const addImage = () => {
-    const imageValue = newImage.trim();
-    if (imageValue && !formData.images.includes(imageValue)) {
-      // Basic URL validation
-      try {
-        new URL(imageValue);
-        setFormData((prev) => ({
-          ...prev,
-          images: [...prev.images, imageValue],
-        }));
-        setNewImage("");
-        toast.success("Image added successfully");
-      } catch {
-        toast.error("Please enter a valid URL");
-      }
-    }
-  };
-
-  const removeImage = (imageToRemove: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      images: prev.images.filter((image) => image !== imageToRemove),
     }));
   };
 
@@ -220,9 +212,6 @@ export default function ProductForm({
       <Card>
         <CardHeader>
           <CardTitle>Product Details</CardTitle>
-          <CardDescription>
-            Fill in the details for your new product.
-          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Title and Slug - 2 columns */}
@@ -284,52 +273,11 @@ export default function ProductForm({
           {/* Images - 100% width */}
           <div className="space-y-4 w-full">
             <Label className="text-base font-medium">Product Images</Label>
-            <div className="space-y-2">
-              {formData.images.map((image, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-2 border rounded-lg"
-                >
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={image}
-                      alt={`Product ${index + 1}`}
-                      className="h-12 w-12 object-cover rounded"
-                      onError={(e) => {
-                        e.currentTarget.src = "/placeholder.svg";
-                      }}
-                    />
-                    <span className="text-sm text-muted-foreground truncate max-w-xs sm:max-w-md">
-                      {image}
-                    </span>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="text-destructive hover:text-destructive"
-                    onClick={() => removeImage(image)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <Input
-                type="url"
-                value={newImage}
-                onChange={(e) => setNewImage(e.target.value)}
-                onKeyDown={(e) =>
-                  e.key === "Enter" && (e.preventDefault(), addImage())
-                }
-                placeholder="Add image URL"
-                className="flex-1"
-              />
-              <Button type="button" variant="outline" onClick={addImage}>
-                Add Image
-              </Button>
-            </div>
+            <ImageUpload
+              value={formData.images}
+              onChange={(images) => handleImageChange("images", images)}
+              multiple={true}
+            />
           </div>
 
           {/* Price, Compare Price, Inventory - 3 columns */}
@@ -398,9 +346,12 @@ export default function ProductForm({
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category.value} value={category.value}>
-                      {category.label}
+                  {reduxCategories.map((category) => (
+                    <SelectItem
+                      key={category.title || category.slug}
+                      value={category.title || category.slug}
+                    >
+                      {category.title || category.slug}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -451,17 +402,22 @@ export default function ProductForm({
                       <CommandInput placeholder="Search collections..." />
                       <CommandEmpty>No collection found.</CommandEmpty>
                       <CommandGroup>
-                        {collections.map((collection) => (
-                          <CommandItem
-                            key={collection._id}
-                            value={collection.title}
-                            onSelect={() => {
-                              toggleCollection(collection._id);
-                            }}
-                          >
-                            {collection.title}
-                          </CommandItem>
-                        ))}
+                        {collections
+                          .filter(
+                            (collection) =>
+                              !formData.collections.includes(collection._id)
+                          )
+                          .map((collection) => (
+                            <CommandItem
+                              key={collection._id}
+                              value={collection.title}
+                              onSelect={() => {
+                                toggleCollection(collection._id);
+                              }}
+                            >
+                              {collection.title}
+                            </CommandItem>
+                          ))}
                       </CommandGroup>
                     </Command>
                   </PopoverContent>

@@ -25,7 +25,7 @@ export default function AdminHeader() {
 
   return (
     <motion.header
-      initial={{ y: -50 }}
+      initial={{ y: -80 }}
       animate={{ y: 0 }}
       className=" sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm border-b"
     >
@@ -63,12 +63,12 @@ export default function AdminHeader() {
                       src={session?.user?.image || "/placeholder-user.jpg"}
                       alt={session?.user?.name || ""}
                     />
-                    {/* <AvatarFallback>
+                    <AvatarFallback>
                       {session?.user?.name
                         ?.split(" ")
                         .map((n) => n[0])
                         .join("")}
-                    </AvatarFallback> */}
+                    </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>

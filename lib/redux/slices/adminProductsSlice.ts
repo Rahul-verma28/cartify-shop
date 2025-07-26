@@ -209,6 +209,7 @@ export const {
 // Selectors
 export const selectFilteredProducts = (state: { adminProducts: AdminProductsState }) => {
   const { products, searchTerm, selectedCategory, selectedCollection } = state.adminProducts
+  console.log("Filtering products with:", { searchTerm, selectedCategory, selectedCollection })
   return products.filter((product) => {
     const matchesSearch = product?.title.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesCategory = !selectedCategory || product?.category === selectedCategory

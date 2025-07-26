@@ -46,9 +46,9 @@ export default async function AdminLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
-          <div className="flex bg-gray-50 dark:bg-gray-950">
+          <div className="flex bg-gray-50 dark:bg-gray-950 w-full h-screen overflow-hidden">
             <AdminSidebar />
-            <main className="flex-1 flex-col h-screen">
+            <main className="flex-1 flex-col max-h-screen overflow-y-auto">
               <AdminHeader />
               <div className="p-6">{children}</div>
             </main>

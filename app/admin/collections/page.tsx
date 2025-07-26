@@ -2,6 +2,7 @@
 
 import type React from "react";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   Plus,
@@ -53,27 +54,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Collection, Product } from "@/lib/types";
 
 export default function AdminCollectionsPage() {
+  const router = useRouter();
   const [collections, setCollections] = useState<Collection[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
-  const [editingCollection, setEditingCollection] = useState<Collection | null>(
-    null
-  );
   const [viewingCollection, setViewingCollection] = useState<Collection | null>(
     null
   );
   const [deleteCollectionId, setDeleteCollectionId] = useState<string | null>(
     null
   );
-  const [formData, setFormData] = useState({
-    title: "",
-    slug: "",
-    description: "",
-    image: "",
-  });
-  const [formLoading, setFormLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
   // Animation variants
@@ -124,90 +115,14 @@ export default function AdminCollectionsPage() {
     }
   };
 
-  const handleOpenDialog = (collection?: Collection) => {
-    if (collection) {
-      setEditingCollection(collection);
-      setFormData({
-        title: collection.title,
-        slug: collection.slug,
-        description: collection.description || "",
-        image: collection.image || "",
-      });
-    } else {
-      setEditingCollection(null);
-      setFormData({ title: "", slug: "", description: "", image: "" });
-    }
-    setIsDialogOpen(true);
-  };
-
   const handleOpenViewDialog = (collection: Collection) => {
     setViewingCollection(collection);
     setIsViewDialogOpen(true);
   };
 
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
-    setEditingCollection(null);
-    setFormData({ title: "", slug: "", description: "", image: "" });
-  };
-
   const handleCloseViewDialog = () => {
     setIsViewDialogOpen(false);
     setViewingCollection(null);
-  };
-
-  const handleInputChange = (field: string, value: string | string[]) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (field === "title" && !editingCollection) {
-      const slug = (value as string)
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
-      setFormData((prev) => ({ ...prev, slug }));
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormLoading(true);
-
-    try {
-      const method = editingCollection ? "PUT" : "POST";
-      const url = editingCollection
-        ? `/api/admin/collections/${editingCollection._id}`
-        : "/api/admin/collections";
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        toast.success(
-          `Collection ${
-            editingCollection ? "updated" : "created"
-          } successfully!`
-        );
-        fetchCollections();
-        handleCloseDialog();
-      } else {
-        const data = await response.json();
-        toast.error(
-          data.error ||
-            `Failed to ${editingCollection ? "update" : "create"} collection`
-        );
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error(
-        `Error ${editingCollection ? "updating" : "creating"} collection`
-      );
-    } finally {
-      setFormLoading(false);
-    }
   };
 
   const handleDeleteCollection = async () => {
@@ -277,7 +192,7 @@ export default function AdminCollectionsPage() {
 
   return (
     <motion.div
-      className="space-y-6"
+      className="space-y-3"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -293,7 +208,7 @@ export default function AdminCollectionsPage() {
             Manage your product collections
           </p>
         </div>
-        <Button onClick={() => handleOpenDialog()}>
+        <Button onClick={() => router.push("/admin/collections/new")}>
           <Plus className="mr-2 h-4 w-4" />
           Add Collection
         </Button>
@@ -417,7 +332,11 @@ export default function AdminCollectionsPage() {
                           <Button
                             variant="secondary"
                             size="sm"
-                            onClick={() => handleOpenDialog(collection)}
+                            onClick={() =>
+                              router.push(
+                                `/admin/collections/${collection._id}/edit`
+                              )
+                            }
                           >
                             <Pencil className="h-4 w-4 mr-1" /> Edit
                           </Button>
@@ -464,9 +383,21 @@ export default function AdminCollectionsPage() {
                       {filteredCollections.length === 0 ? (
                         <TableRow>
                           <TableCell colSpan={5} className="text-center h-32">
-                            <p className="text-muted-foreground">
-                              No collections found
-                            </p>
+                            <div className="text-center py-12">
+                              <p className="text-muted-foreground">
+                                No collections found
+                              </p>
+                              <Button
+                                variant="outline"
+                                className="mt-4"
+                                onClick={() =>
+                                  router.push("/admin/collections/new")
+                                }
+                              >
+                                <Plus className="mr-2 h-4 w-4" />
+                                Add collection
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ) : (
@@ -516,7 +447,11 @@ export default function AdminCollectionsPage() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => handleOpenDialog(collection)}
+                                  onClick={() =>
+                                    router.push(
+                                      `/admin/collections/${collection._id}/edit`
+                                    )
+                                  }
                                 >
                                   <Pencil className="h-4 w-4" />
                                 </Button>
@@ -540,122 +475,9 @@ export default function AdminCollectionsPage() {
                 </div>
               </TabsContent>
             </Tabs>
-
-            {collections.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">No collections found</p>
-                <Button
-                  variant="outline"
-                  className="mt-4"
-                  onClick={() => handleOpenDialog()}
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add your first collection
-                </Button>
-              </div>
-            )}
           </CardContent>
         </Card>
       </motion.div>
-
-      {/* Add/Edit Collection Dialog */}
-      <Dialog
-        open={isDialogOpen}
-        onOpenChange={(open) => !open && handleCloseDialog()}
-      >
-        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
-              {editingCollection ? "Edit Collection" : "Add New Collection"}
-            </DialogTitle>
-            <DialogDescription>
-              {editingCollection
-                ? "Make changes to this collection."
-                : "Add a new collection to your store."}
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="title">
-                Title <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => handleInputChange("title", e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="slug">
-                Slug <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="slug"
-                value={formData.slug}
-                onChange={(e) => handleInputChange("slug", e.target.value)}
-              />
-              <p className="text-xs text-muted-foreground">
-                URL-friendly name (auto-generated from title)
-              </p>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) =>
-                  handleInputChange("description", e.target.value)
-                }
-                placeholder="Optional description for the collection"
-                rows={3}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="image">Image URL</Label>
-              <Input
-                id="image"
-                value={formData.image}
-                onChange={(e) => handleInputChange("image", e.target.value)}
-                placeholder="https://example.com/image.jpg"
-              />
-              {formData.image && (
-                <div className="mt-2 flex items-center gap-2">
-                  <div className="h-10 w-10 relative rounded-md overflow-hidden bg-muted">
-                    <img
-                      src={formData.image}
-                      alt="Preview"
-                      className="object-cover h-full w-full"
-                      onError={(e) => {
-                        e.currentTarget.src = "/placeholder.svg";
-                        toast.error("Invalid image URL");
-                      }}
-                    />
-                  </div>
-                  <span className="text-sm text-muted-foreground">
-                    Image preview
-                  </span>
-                </div>
-              )}
-            </div>
-            <DialogFooter className="mt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleCloseDialog}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" disabled={formLoading}>
-                {(() => {
-                  if (formLoading) return "Saving...";
-                  if (editingCollection) return "Save Changes";
-                  return "Create Collection";
-                })()}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
 
       {/* View Collection Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
@@ -744,7 +566,11 @@ export default function AdminCollectionsPage() {
             <Button
               onClick={() => {
                 handleCloseViewDialog();
-                if (viewingCollection) handleOpenDialog(viewingCollection);
+                if (viewingCollection) {
+                  router.push(
+                    `/admin/collections/${viewingCollection._id}/edit`
+                  );
+                }
               }}
             >
               Edit Collection

@@ -61,7 +61,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { Collection, Category } from "@/lib/types";
+import type { Collection } from "@/lib/types";
 
 export default function AdminProductsPage() {
   const dispatch = useAppDispatch();
@@ -317,7 +317,7 @@ export default function AdminProductsPage() {
               <SelectContent className="max-h-60">
                 <SelectItem value="all">All Categories</SelectItem>
                 {categories.map((category) => (
-                  <SelectItem key={category._id} value={category._id}>
+                  <SelectItem key={category._id} value={category.title || category.slug}>
                     {category.title}
                   </SelectItem>
                 ))}
