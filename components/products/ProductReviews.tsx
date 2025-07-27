@@ -106,8 +106,8 @@ export default function ProductReviews({ productId }: Readonly<ProductReviewsPro
   const handleEditReview = (review: Review) => {
     setEditingReview(review)
     setNewReview({
-      rating: review.rating,
-      comment: review.comment,
+      rating: review?.rating,
+      comment: review?.comment,
     })
     setShowReviewForm(true)
   }
@@ -235,15 +235,15 @@ export default function ProductReviews({ productId }: Readonly<ProductReviewsPro
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center space-x-4">
                   <div className="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center">
-                    <span className="text-white font-semibold">{review?.user.name.charAt(0).toUpperCase()}</span>
+                    <span className="text-white font-semibold">{review?.user?.name.charAt(0).toUpperCase()}</span>
                   </div>
                   <div>
-                    <h5 className="font-semibold text-gray-900 dark:text-white">{review?.user.name}</h5>
+                    <h5 className="font-semibold text-gray-900 dark:text-white">{review?.user?.name}</h5>
                     <div className="flex items-center space-x-2">
                       <div className="flex">
                         {[...Array(5)].map((_, starIndex) => (
                           <StarIcon
-                            key={`star-${review._id}-${starIndex}`}
+                            key={`star-${review?._id}-${starIndex}`}
                             className={`h-4 w-4 ${
                               starIndex < review?.rating ? "text-yellow-400 fill-current" : "text-gray-300"
                             }`}
@@ -288,7 +288,7 @@ export default function ProductReviews({ productId }: Readonly<ProductReviewsPro
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
-                            onClick={() => handleDeleteReview(review._id)}
+                            onClick={() => handleDeleteReview(review?._id)}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                           >
                             Delete

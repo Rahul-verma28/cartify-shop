@@ -72,7 +72,7 @@ export default function AdminReviewsPage() {
       })
 
       if (response.ok) {
-        setReviews(reviews.filter((r) => r._id !== reviewId))
+        setReviews(reviews?.filter((r) => r._id !== reviewId))
         toast.success("Review deleted successfully")
       } else {
         toast.error("Failed to delete review")
@@ -84,7 +84,7 @@ export default function AdminReviewsPage() {
     }
   }
 
-  const filteredReviews = reviews.filter((review) => {
+  const filteredReviews = reviews?.filter((review) => {
     const matchesSearch =
       review?.comment.toLowerCase().includes(searchTerm.toLowerCase()) ||
       review?.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -95,10 +95,10 @@ export default function AdminReviewsPage() {
   // Calculate review stats
   const totalReviews = filteredReviews.length
   const averageRating = filteredReviews.length 
-    ? (filteredReviews.reduce((sum, review) => sum + review.rating, 0) / filteredReviews.length).toFixed(1)
+    ? (filteredReviews.reduce((sum, review) => sum + review?.rating, 0) / filteredReviews.length).toFixed(1)
     : "0.0"
-  const fiveStarReviews = filteredReviews.filter(review => review.rating === 5).length
-  const criticalReviews = filteredReviews.filter(review => review.rating <= 2).length
+  const fiveStarReviews = filteredReviews.filter(review => review?.rating === 5).length
+  const criticalReviews = filteredReviews.filter(review => review?.rating <= 2).length
 
   // Pagination logic
   const indexOfLastReview = currentPage * reviewsPerPage
@@ -321,7 +321,7 @@ export default function AdminReviewsPage() {
                   ) : (
                     currentReviews.map((review) => (
                       <motion.tr
-                        key={review._id}
+                        key={review?._id}
                         variants={rowVariants}
                         exit="exit"
                         className="group"
@@ -350,27 +350,27 @@ export default function AdminReviewsPage() {
                         </TableCell>
                         
                         <TableCell>
-                          {renderStars(review.rating)}
+                          {renderStars(review?.rating)}
                         </TableCell>
                         
                         <TableCell className="max-w-[300px]">
-                          <p className="text-muted-foreground truncate" title={review.comment}>
-                            {review.comment}
+                          <p className="text-muted-foreground truncate" title={review?.comment}>
+                            {review?.comment}
                           </p>
                         </TableCell>
                         
                         <TableCell className="text-muted-foreground">
-                          {new Date(review.createdAt).toLocaleDateString()}
+                          {new Date(review?.createdAt).toLocaleDateString()}
                         </TableCell>
                         
                         <TableCell>
-                          <AlertDialog open={reviewToDelete === review._id} onOpenChange={(open) => !open && setReviewToDelete(null)}>
+                          <AlertDialog open={reviewToDelete === review?._id} onOpenChange={(open) => !open && setReviewToDelete(null)}>
                             <AlertDialogTrigger asChild>
                               <Button 
                                 variant="ghost" 
                                 size="icon"
                                 className="text-red-500 hover:text-red-600 hover:bg-red-100 dark:hover:bg-red-950"
-                                onClick={() => setReviewToDelete(review._id)}
+                                onClick={() => setReviewToDelete(review?._id)}
                               >
                                 <Trash className="h-4 w-4" />
                               </Button>
