@@ -45,14 +45,17 @@ export async function POST(
     const { rating, comment } = await request.json();
 
     // Check if user already reviewed this product
-    // const existingReview = await Review?.findOne({
-    //   user: session.user.id,
-    //   product: resolvedParams?.productId,
-    // })
+    const existingReview = await Review?.findOne({
+      user: session.user.id,
+      product: resolvedParams?.productId,
+    });
 
-    // if (existingReview) {
-    //   return NextResponse.json({ error: "You have already reviewed this product" }, { status: 400 })
-    // }
+    if (existingReview) {
+      return NextResponse.json(
+        { error: "You have already reviewed this product. You can edit your existing review instead." },
+        { status: 400 }
+      );
+    }
 
     // Create new review
     const review = new Review({

@@ -1,8 +1,6 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import { MongoClient } from "mongodb";
 import bcrypt from "bcryptjs";
 import connectDB from "./mongoDB";
 import User from "@/lib/models/User";
@@ -28,10 +26,7 @@ declare module "next-auth/jwt" {
   }
 }
 
-const client = new MongoClient(process.env.MONGODB_URL!);
-
 export const authOptions: NextAuthOptions = {
-  adapter: MongoDBAdapter(client),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -89,9 +84,53 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "google") {
+        try {
+          await connectDB();
+
+          // Check if user already exists
+          let existingUser = await User.findOne({ email: user.email });
+
+          if (!existingUser) {
+            // Create new user for Google OAuth
+            existingUser = await User.create({
+              name: user.name,
+              email: user.email,
+              image: user.image,
+              role: "user",
+              provider: "google",
+              providerId: account.providerAccountId,
+            });
+          }
+
+          // Store the MongoDB user ID for later use
+          user.id = existingUser._id.toString();
+
+          return true;
+        } catch (error) {
+          console.error("Error creating user:", error);
+          return false;
+        }
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.role = user.role;
+        token.sub = user.id; // Ensure we use the MongoDB user ID
+      } else if (token.email && !token.role) {
+        // For Google OAuth, fetch user data from database
+        try {
+          await connectDB();
+          const dbUser = await User.findOne({ email: token.email });
+          if (dbUser) {
+            token.role = dbUser.role;
+            token.sub = dbUser._id.toString();
+          }
+        } catch (error) {
+          console.error("Error fetching user role:", error);
+        }
       }
       return token;
     },
