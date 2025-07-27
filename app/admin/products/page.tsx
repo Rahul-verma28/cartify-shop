@@ -27,7 +27,10 @@ import {
   setSelectedCollection,
   selectFilteredProducts,
 } from "@/lib/redux/slices/adminProductsSlice";
-import { fetchCollections, fetchCategories } from "@/lib/redux/slices/filtersSlice";
+import {
+  fetchCollections,
+  fetchCategories,
+} from "@/lib/redux/slices/filtersSlice";
 
 // shadcn UI imports
 import { Button } from "@/components/ui/button";
@@ -317,7 +320,10 @@ export default function AdminProductsPage() {
               <SelectContent className="max-h-60">
                 <SelectItem value="all">All Categories</SelectItem>
                 {categories.map((category) => (
-                  <SelectItem key={category._id} value={category.title || category.slug}>
+                  <SelectItem
+                    key={category._id}
+                    value={category.title || category.slug}
+                  >
                     {category.title}
                   </SelectItem>
                 ))}
@@ -364,7 +370,15 @@ export default function AdminProductsPage() {
                     colSpan={7}
                     className="text-center py-6 text-muted-foreground"
                   >
-                    No products found
+                    <div className="text-center py-12">
+                      <p className="text-muted-foreground">No products found</p>
+                      <Button variant="outline" className="mt-4" asChild>
+                        <Link href="/admin/products/new">
+                          <PlusIcon className="mr-2 h-4 w-4" />
+                          Add product
+                        </Link>
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ) : (
@@ -472,18 +486,6 @@ export default function AdminProductsPage() {
             </TableBody>
           </Table>
         </div>
-
-        {filteredProducts.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">No products found</p>
-            <Button variant="outline" className="mt-4" asChild>
-              <Link href="/admin/products/new">
-                <PlusIcon className="mr-2 h-4 w-4" />
-                Add your first product
-              </Link>
-            </Button>
-          </div>
-        )}
       </motion.div>
     </motion.div>
   );

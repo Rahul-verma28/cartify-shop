@@ -2,8 +2,7 @@ import type React from "react";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import AdminSidebar from "@/components/admin/AdminSidebar";
-import AdminHeader from "@/components/admin/AdminHeader";
+import AdminLayoutClient from "@/components/admin/AdminLayoutClient";
 import { Providers } from "@/components/providers/Providers";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
@@ -46,13 +45,7 @@ export default async function AdminLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
-          <div className="flex bg-gray-50 dark:bg-gray-950 w-full h-screen overflow-hidden">
-            <AdminSidebar />
-            <main className="flex-1 flex-col max-h-screen overflow-y-auto">
-              <AdminHeader />
-              <div className="p-6">{children}</div>
-            </main>
-          </div>
+          <AdminLayoutClient>{children}</AdminLayoutClient>
         </Providers>
         <Toaster position="top-right" richColors />
       </body>

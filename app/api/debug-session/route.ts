@@ -7,8 +7,5 @@ export async function GET() {
   
   return NextResponse.json({
     session,
-    userId: session?.user?.id,
-    userIdType: typeof session?.user?.id,
-    userIdLength: session?.user?.id?.length,
   });
 }

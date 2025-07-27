@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession, signOut } from "next-auth/react";
-import { Bell } from "lucide-react";
+import { Bell, Menu } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,11 @@ type SessionType = {
   user: SessionUser;
 };
 
-export default function AdminHeader() {
+interface AdminHeaderProps {
+  onMobileMenuToggle?: () => void;
+}
+
+export default function AdminHeader({ onMobileMenuToggle }: AdminHeaderProps) {
   const { data: session } = useSession() as { data: SessionType | null };
 
   return (
@@ -32,6 +36,16 @@ export default function AdminHeader() {
       <div className="px-6 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
+            {/* Mobile Menu Trigger */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onMobileMenuToggle}
+              className="md:hidden"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+
             <div>
               <h1 className="text-xl font-semibold">Admin Dashboard</h1>
               <p className="text-sm text-muted-foreground">
