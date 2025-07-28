@@ -1,10 +1,24 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { motion } from "framer-motion"
 import type { Address } from "@/lib/types"
+import { 
+  UserIcon, 
+  MapPinIcon, 
+  BuildingOfficeIcon, 
+  GlobeAltIcon,
+  CreditCardIcon
+} from "@heroicons/react/24/outline"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
 
 interface CheckoutFormProps {
   onSubmit: (data: Address) => void
@@ -22,6 +36,7 @@ export default function CheckoutForm({ onSubmit, loading }: CheckoutFormProps) {
   })
 
   const [errors, setErrors] = useState<Partial<Address>>({})
+  const [touched, setTouched] = useState<Partial<Record<keyof Address, boolean>>>({})
 
   const validateForm = () => {
     const newErrors: Partial<Address> = {}
@@ -52,106 +67,244 @@ export default function CheckoutForm({ onSubmit, loading }: CheckoutFormProps) {
     }
   }
 
+  const handleInputBlur = (field: keyof Address) => {
+    setTouched((prev) => ({ ...prev, [field]: true }))
+  }
+
+  const getInputStatus = (field: keyof Address) => {
+    if (!touched[field]) return 'default'
+    if (errors[field]) return 'error'
+    if (formData[field].trim()) return 'success'
+    return 'default'
+  }
+
+  const countries = [
+    { value: "United States", label: "United States" },
+    { value: "Canada", label: "Canada" },
+    { value: "United Kingdom", label: "United Kingdom" },
+    { value: "Australia", label: "Australia" },
+    { value: "Germany", label: "Germany" },
+    { value: "France", label: "France" },
+  ]
+
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6"
+      transition={{ duration: 0.5 }}
+      className="space-y-6"
     >
-      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Shipping Information</h2>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <MapPinIcon className="h-5 w-5 text-primary" />
+            </div>
+            <span>Shipping Information</span>
+          </CardTitle>
+        </CardHeader>
+        
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Personal Information */}
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <UserIcon className="h-4 w-4 text-muted-foreground" />
+                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                  Personal Details
+                </h3>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="fullName" className="flex items-center space-x-2">
+                  <span>Full Name</span>
+                  <span className="text-red-500"> *</span>
+                </Label>
+                <Input
+                  id="fullName"
+                  type="text"
+                  value={formData.fullName}
+                  onChange={(e) => handleInputChange("fullName", e.target.value)}
+                  onBlur={() => handleInputBlur("fullName")}
+                  placeholder="Enter your full name"
+                  className={errors.fullName ? "border-destructive focus-visible:ring-destructive" : ""}
+                />
+                {errors.fullName && (
+                  <Alert variant="destructive">
+                    <AlertDescription className="text-sm">
+                      {errors.fullName}
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </div>
+            </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name *</label>
-          <input
-            type="text"
-            value={formData.fullName}
-            onChange={(e) => handleInputChange("fullName", e.target.value)}
-            className={`input-field ${errors.fullName ? "border-red-500" : ""}`}
-            placeholder="Enter your full name"
-          />
-          {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
-        </div>
+            <Separator />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Street Address *</label>
-          <input
-            type="text"
-            value={formData.street}
-            onChange={(e) => handleInputChange("street", e.target.value)}
-            className={`input-field ${errors.street ? "border-red-500" : ""}`}
-            placeholder="Enter your street address"
-          />
-          {errors.street && <p className="text-red-500 text-sm mt-1">{errors.street}</p>}
-        </div>
+            {/* Address Information */}
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <BuildingOfficeIcon className="h-4 w-4 text-muted-foreground" />
+                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                  Address Details
+                </h3>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="street" className="flex items-center space-x-2">
+                  <span>Street Address</span>
+                  <span className="text-red-500"> *</span>
+                </Label>
+                <Input
+                  id="street"
+                  type="text"
+                  value={formData.street}
+                  onChange={(e) => handleInputChange("street", e.target.value)}
+                  onBlur={() => handleInputBlur("street")}
+                  placeholder="123 Main Street, Apt 4B"
+                  className={errors.street ? "border-destructive focus-visible:ring-destructive" : ""}
+                />
+                {errors.street && (
+                  <Alert variant="destructive">
+                    <AlertDescription className="text-sm">
+                      {errors.street}
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City *</label>
-            <input
-              type="text"
-              value={formData.city}
-              onChange={(e) => handleInputChange("city", e.target.value)}
-              className={`input-field ${errors.city ? "border-red-500" : ""}`}
-              placeholder="Enter your city"
-            />
-            {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city}</p>}
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="city" className="flex items-center space-x-2">
+                    <span>City</span>
+                    <span className="text-red-500"> *</span>
+                  </Label>
+                  <Input
+                    id="city"
+                    type="text"
+                    value={formData.city}
+                    onChange={(e) => handleInputChange("city", e.target.value)}
+                    onBlur={() => handleInputBlur("city")}
+                    placeholder="New York"
+                    className={errors.city ? "border-destructive focus-visible:ring-destructive" : ""}
+                  />
+                  {errors.city && (
+                    <Alert variant="destructive">
+                      <AlertDescription className="text-sm">
+                        {errors.city}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">State *</label>
-            <input
-              type="text"
-              value={formData.state}
-              onChange={(e) => handleInputChange("state", e.target.value)}
-              className={`input-field ${errors.state ? "border-red-500" : ""}`}
-              placeholder="Enter your state"
-            />
-            {errors.state && <p className="text-red-500 text-sm mt-1">{errors.state}</p>}
-          </div>
-        </div>
+                <div className="space-y-2">
+                  <Label htmlFor="state" className="flex items-center space-x-2">
+                    <span>State / Province</span>
+                    <span className="text-red-500"> *</span>
+                  </Label>
+                  <Input
+                    id="state"
+                    type="text"
+                    value={formData.state}
+                    onChange={(e) => handleInputChange("state", e.target.value)}
+                    onBlur={() => handleInputBlur("state")}
+                    placeholder="NY"
+                    className={errors.state ? "border-destructive focus-visible:ring-destructive" : ""}
+                  />
+                  {errors.state && (
+                    <Alert variant="destructive">
+                      <AlertDescription className="text-sm">
+                        {errors.state}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+              </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ZIP Code *</label>
-            <input
-              type="text"
-              value={formData.zipCode}
-              onChange={(e) => handleInputChange("zipCode", e.target.value)}
-              className={`input-field ${errors.zipCode ? "border-red-500" : ""}`}
-              placeholder="Enter your ZIP code"
-            />
-            {errors.zipCode && <p className="text-red-500 text-sm mt-1">{errors.zipCode}</p>}
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="zipCode" className="flex items-center space-x-2">
+                    <span>ZIP / Postal Code</span>
+                    <span className="text-red-500"> *</span>
+                  </Label>
+                  <Input
+                    id="zipCode"
+                    type="text"
+                    value={formData.zipCode}
+                    onChange={(e) => handleInputChange("zipCode", e.target.value)}
+                    onBlur={() => handleInputBlur("zipCode")}
+                    placeholder="10001"
+                    className={errors.zipCode ? "border-destructive focus-visible:ring-destructive" : ""}
+                  />
+                  {errors.zipCode && (
+                    <Alert variant="destructive">
+                      <AlertDescription className="text-sm">
+                        {errors.zipCode}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Country *</label>
-            <select
-              value={formData.country}
-              onChange={(e) => handleInputChange("country", e.target.value)}
-              className={`input-field ${errors.country ? "border-red-500" : ""}`}
-            >
-              <option value="United States">United States</option>
-              <option value="Canada">Canada</option>
-              <option value="United Kingdom">United Kingdom</option>
-              <option value="Australia">Australia</option>
-              <option value="Germany">Germany</option>
-              <option value="France">France</option>
-            </select>
-            {errors.country && <p className="text-red-500 text-sm mt-1">{errors.country}</p>}
-          </div>
-        </div>
+                <div className="space-y-2">
+                  <Label className="flex items-center space-x-2">
+                    <GlobeAltIcon className="h-4 w-4" />
+                    <span>Country</span>
+                    <span className="text-red-500"> *</span>
+                  </Label>
+                  <Select value={formData.country} onValueChange={(value) => handleInputChange("country", value)}>
+                    <SelectTrigger className={errors.country ? "border-destructive focus:ring-destructive" : ""}>
+                      <SelectValue placeholder="Select a country" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {countries.map((country) => (
+                        <SelectItem key={country.value} value={country.value}>
+                          {country.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.country && (
+                    <Alert variant="destructive">
+                      <AlertDescription className="text-sm">
+                        {errors.country}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+              </div>
+            </div>
 
-        <div className="pt-6">
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? "Processing..." : "Continue to Payment"}
-          </button>
-        </div>
-      </form>
+            <Separator />
+
+            {/* Submit Button */}
+            <div className="space-y-4">
+              <Button
+                type="submit"
+                disabled={loading}
+                size="lg"
+                className="w-full"
+              >
+                {loading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-background border-t-transparent mr-2"></div>
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <CreditCardIcon className="h-4 w-4 mr-2" />
+                    Continue to Payment
+                  </>
+                )}
+              </Button>
+              
+              <p className="text-xs text-muted-foreground text-center">
+                🔒 Your information is secure and encrypted
+              </p>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </motion.div>
   )
 }
+       

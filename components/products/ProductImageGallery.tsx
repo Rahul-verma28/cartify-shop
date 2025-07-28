@@ -39,7 +39,7 @@ export function ProductImageGallery({ images, title, comparePrice, price }: Prod
             initial={{ opacity: 0, scale: 1.1 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.4 }}
+            transition={{ duration: 0.2 }}
             className="w-full h-full"
           >
             <Image

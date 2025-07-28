@@ -1,38 +1,44 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
-import { 
-  ShoppingCart, 
-  Heart, 
-  Share2, 
-  Truck, 
-  Shield, 
-  RefreshCw, 
-  Minus, 
-  Plus, 
-  Check, 
-  Zap, 
-  CheckCircle 
-} from "lucide-react"
-import { RatingStars } from "@/components/products/RatingStars"
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  ShoppingCart,
+  Heart,
+  Share2,
+  Truck,
+  Shield,
+  RefreshCw,
+  Minus,
+  Plus,
+  Check,
+  Zap,
+  CheckCircle,
+  AlertTriangle,
+} from "lucide-react";
+import { RatingStars } from "@/components/products/RatingStars";
+import type { RootState } from "@/lib/redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "@/lib/redux/slices/cartSlice";
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from "@/lib/redux/slices/wishlistSlice";
+import { toast } from "sonner";
 
 interface ProductInfoProps {
-  product: any
-  selectedSize: string
-  selectedColor: string
-  quantity: number
-  addedToCart: boolean
-  isWishlisted: boolean
-  onSizeChange: (size: string) => void
-  onColorChange: (color: string) => void
-  onQuantityChange: (quantity: number) => void
-  onAddToCart: () => void
-  onWishlistToggle: () => void
-  onShare: () => void
+  product: any;
+  selectedSize: string;
+  selectedColor: string;
+  quantity: number;
+  addedToCart: boolean;
+  onSizeChange: (size: string) => void;
+  onColorChange: (color: string) => void;
+  onQuantityChange: (quantity: number) => void;
+  onShare: () => void;
 }
 
 export function ProductInfo({
@@ -41,58 +47,123 @@ export function ProductInfo({
   selectedColor,
   quantity,
   addedToCart,
-  isWishlisted,
   onSizeChange,
   onColorChange,
   onQuantityChange,
-  onAddToCart,
-  onWishlistToggle,
-  onShare
+  onShare,
 }: ProductInfoProps) {
+  const dispatch = useDispatch();
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const wishlistItems = useSelector(
+    (state: RootState) => state.wishlist?.items
+  );
+  const isInWishlist = wishlistItems.includes(product?._id);
+  const handleAddToCart = async () => {
+    if (!product) return;
+
+    // Validate required selections
+    if (product.size && product.size.length > 0 && !selectedSize) {
+      toast.error("Please select a size");
+      return;
+    }
+
+    if (product.color && product.color.length > 0 && !selectedColor) {
+      toast.error("Please select a color");
+      return;
+    }
+
+    if (product.inventory === 0) {
+      toast.error("Product is out of stock");
+      return;
+    }
+
+    if (quantity > product.inventory) {
+      toast.error(`Only ${product.inventory} units available`);
+      return;
+    }
+
+    try {
+      setIsAddingToCart(true);
+
+      const cartItem = {
+        product: {
+          ...product,
+          selectedSize,
+          selectedColor,
+        },
+        quantity,
+      };
+
+      dispatch(addToCart(cartItem));
+      toast.success(`Added ${quantity} item(s) to cart!`);
+    } catch (error) {
+      toast.error("Failed to add item to cart");
+      console.error("Add to cart error:", error);
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
+
+  const handleWishlistToggle = async () => {
+    if (!product?._id) return;
+
+    try {
+      if (isInWishlist) {
+        dispatch(removeFromWishlist(product._id));
+        toast.success("Removed from wishlist");
+      } else {
+        dispatch(addToWishlist(product._id));
+        toast.success("Added to wishlist");
+      }
+    } catch (error) {
+      toast.error("Failed to update wishlist");
+      console.error("Wishlist error:", error);
+    }
+  };
+
+  const isOutOfStock = !product?.inventory || product.inventory === 0;
+  const isLowStock = product?.inventory > 0 && product.inventory <= 5;
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.4 }}
-      className="space-y-3"
+      className="space-y-6"
     >
+      {/* Product Header */}
       <div>
-        <div>
-          <div className="flex items-center space-x-2 mb-2">
-            {product.featured && (
-              <Badge className="bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0">
-                <Zap className="w-3 h-3 mr-1" />
-                Featured
-              </Badge>
-            )}
-            <Badge variant="outline" className="capitalize">
-              {product.category?.replace("-", " ")}
+        <div className="flex items-center space-x-2 mb-3">
+          {product.featured && (
+            <Badge className="bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0">
+              <Zap className="w-3 h-3 mr-1" />
+              Featured
             </Badge>
-          </div>
+          )}
+          <Badge variant="outline" className="capitalize">
+            {product.category?.replace("-", " ")}
+          </Badge>
+        </div>
 
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            {product.title}
-          </h1>
+        <h1 className="text-xl md:text-3xl font-bold mb-4">{product.title}</h1>
 
+        {product.rating && (
           <div className="flex items-center space-x-4 mb-4">
-            <RatingStars
-              rating={product.rating.average}
-              size="lg"
-              showValue
-            />
+            <RatingStars rating={product.rating.average} size="md" showValue />
             <span className="text-muted-foreground">
               ({product.rating.count} reviews)
             </span>
           </div>
-        </div>
+        )}
 
-        <div className="flex items-center space-x-4 mb-3">
-          <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+        {/* Price */}
+        <div className="flex items-center space-x-4 mb-4">
+          <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
             ${product.price?.toFixed(2)}
           </span>
-          {product.comparePrice && (
+          {product.comparePrice && product.comparePrice > product.price && (
             <>
-              <span className="text-xl text-gray-500 line-through">
+              <span className="text-md text-gray-500 line-through">
                 ${product.comparePrice.toFixed(2)}
               </span>
               <Badge variant="destructive">
@@ -107,7 +178,7 @@ export function ProductInfo({
           )}
         </div>
 
-        <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed">
+        <p className="text-gray-600 dark:text-gray-300 text-md leading-relaxed mb-4">
           {product.description}
         </p>
       </div>
@@ -124,10 +195,11 @@ export function ProductInfo({
       )}
 
       {/* Product Options */}
-      <div className="space-y-3">
+      <div className="space-y-4">
+        {/* Size Selection */}
         {product.size && product.size.length > 0 && (
           <div>
-            <label className="block text-sm mb-3 text-gray-900 dark:text-white">
+            <label className="block text-sm font-medium mb-3 text-gray-900 dark:text-white">
               Size:{" "}
               {selectedSize && (
                 <span className="font-normal text-blue-600">
@@ -151,12 +223,13 @@ export function ProductInfo({
           </div>
         )}
 
+        {/* Color Selection */}
         {product.color && product.color.length > 0 && (
           <div>
-            <label className="block text-sm mb-3 text-gray-900 dark:text-white">
+            <label className="block text-sm font-medium mb-3 text-gray-900 dark:text-white">
               Color:{" "}
               {selectedColor && (
-                <span className="font-normal text-blue-600">
+                <span className="font-normal text-blue-600 capitalize">
                   {selectedColor}
                 </span>
               )}
@@ -168,18 +241,34 @@ export function ProductInfo({
                   variant={selectedColor === color ? "default" : "outline"}
                   size="sm"
                   onClick={() => onColorChange(color)}
-                  className="capitalize"
+                  className={`capitalize min-w-[4rem] h-10 ${
+                    selectedColor === color
+                      ? "ring-2 ring-blue-500 ring-offset-2"
+                      : "hover:ring-1 hover:ring-gray-300"
+                  }`}
                 >
-                  {color}
+                  <div className="flex items-center space-x-2">
+                    <div
+                      className="w-3 h-3 rounded-full border border-gray-300"
+                      style={{
+                        backgroundColor:
+                          color.toLowerCase() === "white"
+                            ? "#ffffff"
+                            : color.toLowerCase(),
+                      }}
+                    />
+                    <span>{color}</span>
+                  </div>
                 </Button>
               ))}
             </div>
           </div>
         )}
 
-        <div className="flex items-center space-x-3">
-          <label className="block text-sm text-gray-900 dark:text-white">
-            Quantity:{" "}
+        {/* Quantity Selection */}
+        <div className="flex items-center space-x-4">
+          <label className="text-sm font-medium text-gray-900 dark:text-white">
+            Quantity:
           </label>
           <div className="flex items-center space-x-3">
             <Button
@@ -209,12 +298,31 @@ export function ProductInfo({
             </Button>
           </div>
         </div>
+
+        {/* Stock Status */}
         <div className="flex items-center space-x-2">
-          <CheckCircle className="w-5 h-5 text-green-500" />
-          <span className="text-sm">
-            <span className="font-medium text-green-600">In Stock</span> -{" "}
-            {product.inventory || 99} units available
-          </span>
+          {isOutOfStock ? (
+            <>
+              <AlertTriangle className="w-5 h-5 text-red-500" />
+              <span className="text-sm">
+                <span className="font-medium text-red-600">Out of Stock</span>
+              </span>
+            </>
+          ) : (
+            <>
+              <CheckCircle className="w-5 h-5 text-green-500" />
+              <span className="text-sm">
+                <span
+                  className={`font-medium ${
+                    isLowStock ? "text-orange-600" : "text-green-600"
+                  }`}
+                >
+                  {isLowStock ? "Low Stock" : "In Stock"}
+                </span>{" "}
+                - {product.inventory} units available
+              </span>
+            </>
+          )}
         </div>
       </div>
 
@@ -222,16 +330,29 @@ export function ProductInfo({
       <div className="space-y-4">
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <Button
-            size="lg"
-            className="w-full text-lg py-6 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 transition-all duration-200"
-            onClick={onAddToCart}
-            disabled={addedToCart}
+            size="sm"
+            className="w-full text-md py-6 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 transition-all duration-200"
+            onClick={handleAddToCart}
+            disabled={addedToCart || isAddingToCart || isOutOfStock}
           >
-            {addedToCart ? (
+            {isAddingToCart ? (
+              <>
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="w-5 h-5 mr-2"
+                >
+                  <RefreshCw className="w-5 h-5" />
+                </motion.div>
+                Adding...
+              </>
+            ) : addedToCart ? (
               <>
                 <Check className="w-5 h-5 mr-2" />
                 Added to Cart!
               </>
+            ) : isOutOfStock ? (
+              "Out of Stock"
             ) : (
               <>
                 <ShoppingCart className="w-5 h-5 mr-2" />
@@ -246,14 +367,16 @@ export function ProductInfo({
             variant="outline"
             size="lg"
             className="flex-1"
-            onClick={onWishlistToggle}
+            onClick={handleWishlistToggle}
           >
             <Heart
-              className={`w-5 h-5 mr-2 ${
-                isWishlisted ? "fill-current text-red-500" : ""
+              className={`w-5 h-5 mr-2 transition-colors ${
+                isInWishlist
+                  ? "fill-red-500 text-red-500"
+                  : "text-gray-500 hover:text-red-500"
               }`}
             />
-            {isWishlisted ? "Saved" : "Save"}
+            {isInWishlist ? "Saved" : "Save"}
           </Button>
           <Button
             variant="outline"
@@ -268,39 +391,20 @@ export function ProductInfo({
       </div>
 
       {/* Product Features */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
-                <Truck className="w-5 h-5 text-green-600 dark:text-green-400" />
-              </div>
-              <div>
-                <p className="font-medium text-sm">Free Shipping</p>
-                <p className="text-xs text-gray-500">On orders over $50</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
-                <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div>
-                <p className="font-medium text-sm">2 Year Warranty</p>
-                <p className="text-xs text-gray-500">Full coverage</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/20 rounded-full flex items-center justify-center">
-                <RefreshCw className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-              </div>
-              <div>
-                <p className="font-medium text-sm">30-Day Returns</p>
-                <p className="text-xs text-gray-500">No questions asked</p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t">
+        <div className="flex items-center space-x-2">
+          <Truck className="w-5 h-5 text-green-600" />
+          <span className="text-sm">Free Shipping</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Shield className="w-5 h-5 text-blue-600" />
+          <span className="text-sm">2 Year Warranty</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <RefreshCw className="w-5 h-5 text-purple-600" />
+          <span className="text-sm">30-Day Returns</span>
+        </div>
+      </div>
     </motion.div>
-  )
+  );
 }
