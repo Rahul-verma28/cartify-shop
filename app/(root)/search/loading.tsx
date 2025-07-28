@@ -4,7 +4,7 @@ import { Search } from "lucide-react"
 export default function SearchLoading() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Search Header Skeleton */}
         <Card className="mb-8">
           <CardContent className="p-6">

@@ -48,7 +48,7 @@ export default function ComparePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 dark:bg-gray-800 rounded mb-8 w-64"></div>
             <Card>
@@ -73,7 +73,7 @@ export default function ComparePage() {
   if (error || products?.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <Card className="max-w-md mx-auto">
               <CardContent className="p-12 text-center">
@@ -100,7 +100,7 @@ export default function ComparePage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <div className="flex items-center justify-between">

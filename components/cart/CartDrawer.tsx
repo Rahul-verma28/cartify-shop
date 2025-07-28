@@ -157,7 +157,7 @@ export default function CartDrawer() {
             <div className="border-t pt-6 space-y-4">
               <div className="flex justify-between text-base font-medium">
                 <p>Subtotal</p>
-                <p>${total.toFixed(2)}</p>
+                <p>${total?.toFixed(2)}</p>
               </div>
               <p className="text-sm text-muted-foreground">
                 Shipping and taxes calculated at checkout.

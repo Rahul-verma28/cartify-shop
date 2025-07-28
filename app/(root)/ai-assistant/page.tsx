@@ -1,4 +1,3 @@
-import CartDrawer from "@/components/cart/CartDrawer";
 import AIChat from "@/components/ai/AIChat";
 
 export const metadata = {
@@ -16,7 +15,6 @@ export default function AIAssistantPage() {
         </h1>
         <AIChat />
       </main>
-      <CartDrawer />
     </div>
   );
 }

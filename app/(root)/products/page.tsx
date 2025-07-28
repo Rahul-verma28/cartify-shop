@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import CartDrawer from "@/components/cart/CartDrawer";
 import ProductsGrid from "@/components/products/ProductsGrid";
 import ProductFilters from "@/components/products/ProductFilters";
 import ProductsLoading from "@/components/products/ProductsLoading";
@@ -12,7 +11,7 @@ export const metadata = {
 export default function ProductsPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
           <aside className="lg:w-64 flex-shrink-0">
@@ -27,7 +26,6 @@ export default function ProductsPage() {
           </div>
         </div>
       </main>
-      <CartDrawer />
     </div>
   );
 }

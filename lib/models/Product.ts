@@ -97,5 +97,8 @@ const ProductSchema = new Schema<IProduct>(
 
 ProductSchema.index({ title: "text", description: "text", tags: "text" });
 
-export default mongoose.models.Product ||
-  mongoose.model<IProduct>("Product", ProductSchema);
+// Check if mongoose is connected and models exist
+const Product =
+  mongoose.models?.Product || mongoose.model<IProduct>("Product", ProductSchema);
+
+export default Product;

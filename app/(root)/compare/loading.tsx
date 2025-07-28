@@ -4,7 +4,7 @@ import { Scale } from "lucide-react"
 export default function CompareLoading() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Skeleton */}
         <div className="mb-8 animate-pulse">
           <div className="flex items-center justify-between">
