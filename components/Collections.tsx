@@ -63,7 +63,7 @@ console.log("Collections:", collections);
             className="w-full max-w-7xl mx-auto"
           >
             <CarouselContent className="-ml-2 md:-ml-4">
-              {collections.map((collection: CollectionType) => (
+              {collections?.map((collection: CollectionType) => (
                 <CarouselItem
                   key={collection._id}
                   className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"

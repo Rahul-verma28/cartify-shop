@@ -72,7 +72,7 @@ export default function ProductCard({
 
   return (
     <motion.div
-      whileHover={{ y: -5 }}
+      whileHover={{ y: -2 }}
       transition={{ duration: 0.2 }}
       className="group"
     >
@@ -90,7 +90,7 @@ export default function ProductCard({
 
             {/* Badges */}
             <div className="absolute top-3 left-3 flex flex-col gap-2">
-              {discountPercentage > 0 && (
+              {discountPercentage > 0 && product?.inventory > 5 && (
                 <Badge variant="destructive" className="text-xs">
                   -{discountPercentage}%
                 </Badge>

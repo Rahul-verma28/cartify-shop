@@ -107,10 +107,16 @@ export interface WishlistItem {
 
 export interface FilterState {
   category: string
+  collection: string
   priceRange: [number, number]
   rating: number
   tags: string[]
-  sortBy: "newest" | "price-low" | "price-high" | "rating"
+  size: string[]
+  color: string[]
+  featured: boolean
+  search: string
+  sortBy: "createdAt" | "price" | "title" | "rating.average"
+  order: "asc" | "desc"
 }
 
 export interface AIMessage {

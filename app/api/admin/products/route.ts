@@ -81,7 +81,6 @@ export async function POST(request: NextRequest) {
       !productData.slug ||
       !productData.description ||
       !productData.price ||
-      !productData.comparePrice ||
       !productData.category||
       !productData.images 
     ) {

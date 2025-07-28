@@ -1,12 +1,35 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import type { RootState } from "@/lib/redux/store"
-import { updateFilters, resetFilters } from "@/lib/redux/slices/productsSlice"
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline"
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "@/lib/redux/store";
+import { updateFilters, resetFilters } from "@/lib/redux/slices/productsSlice";
+import {
+  ChevronDown,
+  ChevronUp,
+  Search,
+  Star,
+  Tag,
+  Palette,
+  Ruler,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
-const categories = ["Electronics", "Fashion", "Home & Garden", "Sports", "Books", "Beauty", "Toys", "Automotive"]
+const categories = [
+  "Electronics",
+  "Fashion",
+  "Home & Garden",
+  "Sports",
+  "Books",
+  "Beauty",
+  "Toys",
+  "Automotive",
+];
 
 const priceRanges = [
   { label: "Under $25", min: 0, max: 25 },
@@ -14,146 +37,424 @@ const priceRanges = [
   { label: "$50 - $100", min: 50, max: 100 },
   { label: "$100 - $200", min: 100, max: 200 },
   { label: "Over $200", min: 200, max: 1000 },
-]
+];
+
+const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
+const colors = [
+  "Red",
+  "Blue",
+  "Green",
+  "Black",
+  "White",
+  "Gray",
+  "Pink",
+  "Purple",
+];
+const tags = ["Sale", "New", "Popular", "Limited", "Bestseller", "Trending"];
 
 export default function ProductFilters() {
-  const dispatch = useDispatch()  
-  const { filters } = useSelector((state: RootState) => state.products)
+  const dispatch = useDispatch();
+  const { filters } = useSelector((state: RootState) => state.products);
   const [expandedSections, setExpandedSections] = useState({
+    search: true,
     category: true,
+    collection: false,
     price: true,
     rating: true,
-  })
+    size: false,
+    color: false,
+    tags: false,
+    featured: true,
+  });
+  const [collections, setCollections] = useState([]);
+
+  useEffect(() => {
+    // Fetch collections for filter
+    fetchCollections();
+  }, []);
+
+  const fetchCollections = async () => {
+    try {
+      const response = await fetch("/api/collections");
+      const data = await response.json();
+      setCollections(data);
+    } catch (error) {
+      console.error("Failed to fetch collections:", error);
+    }
+  };
 
   const toggleSection = (section: keyof typeof expandedSections) => {
     setExpandedSections((prev) => ({
       ...prev,
       [section]: !prev[section],
-    }))
-  }
+    }));
+  };
+
+  const handleSearchChange = (value: string) => {
+    dispatch(updateFilters({ search: value }));
+  };
 
   const handleCategoryChange = (category: string) => {
     dispatch(
       updateFilters({
         category: filters.category === category ? "" : category,
-      }),
-    )
-  }
+      })
+    );
+  };
+
+  const handleCollectionChange = (collection: string) => {
+    dispatch(
+      updateFilters({
+        collection: filters.collection === collection ? "" : collection,
+      })
+    );
+  };
+
+  const handleSizeToggle = (size: string) => {
+    const newSizes = filters.size?.includes(size)
+      ? filters.size.filter((s) => s !== size)
+      : [...(filters.size || []), size];
+    dispatch(updateFilters({ size: newSizes }));
+  };
+
+  const handleColorToggle = (color: string) => {
+    const newColors = filters.color?.includes(color)
+      ? filters.color.filter((c) => c !== color)
+      : [...(filters.color || []), color];
+    dispatch(updateFilters({ color: newColors }));
+  };
+
+  const handleTagToggle = (tag: string) => {
+    const newTags = filters.tags?.includes(tag)
+      ? filters.tags.filter((t) => t !== tag)
+      : [...(filters.tags || []), tag];
+    dispatch(updateFilters({ tags: newTags }));
+  };
 
   const handlePriceRangeChange = (min: number, max: number) => {
-    dispatch(updateFilters({ priceRange: [min, max] }))
-  }
+    dispatch(updateFilters({ priceRange: [min, max] }));
+  };
 
   const handleRatingChange = (rating: number) => {
     dispatch(
       updateFilters({
         rating: filters.rating === rating ? 0 : rating,
-      }),
-    )
-  }
+      })
+    );
+  };
 
   const handleReset = () => {
-    dispatch(resetFilters())
-  }
+    dispatch(resetFilters());
+  };
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Filters</h2>
-        <button onClick={handleReset} className="text-sm text-primary-600 hover:text-primary-700">
+    <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 space-y-4">
+      <div className="flex justify-between items-center">
+        <h2 className="text-lg font-semibold">Filters</h2>
+        <Button onClick={handleReset} variant="ghost" size="sm">
           Reset All
+        </Button>
+      </div>
+
+      {/* Search Filter */}
+      <div>
+        <button
+          onClick={() => toggleSection("search")}
+          className="flex justify-between items-center w-full text-left font-medium mb-2 text-sm"
+        >
+          <div className="flex items-center gap-2">
+            <Search className="h-4 w-4" />
+            Search
+          </div>
+          {expandedSections.search ? (
+            <ChevronUp className="h-4 w-4" />
+          ) : (
+            <ChevronDown className="h-4 w-4" />
+          )}
         </button>
+        {expandedSections.search && (
+          <Input
+            placeholder="Search products..."
+            value={filters.search}
+            onChange={(e) => handleSearchChange(e.target.value)}
+          />
+        )}
+      </div>
+
+      {/* Featured Products Toggle */}
+      <div>
+        <button
+          onClick={() => toggleSection("featured")}
+          className="flex justify-between items-center w-full text-left font-medium mb-2 text-sm"
+        >
+          Featured Products
+          {expandedSections.featured ? (
+            <ChevronUp className="h-4 w-4" />
+          ) : (
+            <ChevronDown className="h-4 w-4" />
+          )}
+        </button>
+        {expandedSections.featured && (
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="featured"
+              checked={filters.featured}
+              onCheckedChange={(checked) =>
+                dispatch(updateFilters({ featured: checked }))
+              }
+            />
+            <Label htmlFor="featured" className="text-xs">Featured products</Label>
+          </div>
+        )}
       </div>
 
       {/* Category Filter */}
-      <div className="mb-6">
+      <div>
         <button
           onClick={() => toggleSection("category")}
-          className="flex justify-between items-center w-full text-left font-medium text-gray-900 dark:text-white mb-3"
+          className="flex justify-between items-center w-full text-left font-medium mb-2 text-sm"
         >
           Category
-          {expandedSections.category ? <ChevronUpIcon className="h-5 w-5" /> : <ChevronDownIcon className="h-5 w-5" />}
+          {expandedSections.category ? (
+            <ChevronUp className="h-4 w-4" />
+          ) : (
+            <ChevronDown className="h-4 w-4" />
+          )}
         </button>
         {expandedSections.category && (
           <div className="space-y-2">
             {categories.map((category) => (
-              <label key={category} className="flex items-center">
-                <input
-                  type="checkbox"
+              <div key={category} className="flex items-center space-x-2">
+                <Checkbox
+                  id={category}
                   checked={filters.category === category.toLowerCase()}
-                  onChange={() => handleCategoryChange(category.toLowerCase())}
-                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  onCheckedChange={() =>
+                    handleCategoryChange(category.toLowerCase())
+                  }
                 />
-                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">{category}</span>
-              </label>
+                <Label htmlFor={category} className="text-xs">
+                  {category}
+                </Label>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Collection Filter */}
+      <div>
+        <button
+          onClick={() => toggleSection("collection")}
+          className="flex justify-between items-center w-full text-left font-medium mb-2 text-sm"
+        >
+          Collections
+          {expandedSections.collection ? (
+            <ChevronUp className="h-4 w-4" />
+          ) : (
+            <ChevronDown className="h-4 w-4" />
+          )}
+        </button>
+        {expandedSections.collection && (
+          <div className="space-y-2">
+            {collections?.map((collection: any) => (
+              <div key={collection?._id} className="flex items-center space-x-2 text-xs">
+                <Checkbox
+                  id={collection?._id}
+                  checked={filters.collection === collection?._id}
+                  onCheckedChange={() => handleCollectionChange(collection?._id)}
+                />
+                <Label htmlFor={collection?._id} className="text-sm">
+                  {collection?.title}
+                </Label>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Size Filter */}
+      <div>
+        <button
+          onClick={() => toggleSection("size")}
+          className="flex justify-between items-center w-full text-left font-medium mb-2 text-sm"
+        >
+          <div className="flex items-center gap-2">
+            Size
+          </div>
+          {expandedSections.size ? (
+            <ChevronUp className="h-4 w-4" />
+          ) : (
+            <ChevronDown className="h-4 w-4" />
+          )}
+        </button>
+        {expandedSections.size && (
+          <div className="flex flex-wrap gap-2">
+            {sizes.map((size) => (
+              <Badge
+                key={size}
+                variant={filters.size?.includes(size) ? "default" : "outline"}
+                className="cursor-pointer"
+                onClick={() => handleSizeToggle(size)}
+              >
+                {size}
+              </Badge>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Color Filter */}
+      <div>
+        <button
+          onClick={() => toggleSection("color")}
+          className="flex justify-between items-center w-full text-left font-medium mb-2 text-sm"
+        >
+          <div className="flex items-center gap-2">
+            Color
+          </div>
+          {expandedSections.color ? (
+            <ChevronUp className="h-4 w-4" />
+          ) : (
+            <ChevronDown className="h-4 w-4" />
+          )}
+        </button>
+        {expandedSections.color && (
+          <div className="flex flex-wrap gap-2">
+            {colors.map((color) => (
+              <Badge
+                key={color}
+                variant={filters.color?.includes(color) ? "default" : "outline"}
+                className="cursor-pointer"
+                onClick={() => handleColorToggle(color)}
+              >
+                {color}
+              </Badge>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Tags Filter */}
+      <div>
+        <button
+          onClick={() => toggleSection("tags")}
+          className="flex justify-between items-center w-full text-left font-medium mb-2 text-sm"
+        >
+          <div className="flex items-center gap-2">
+            Tags
+          </div>
+          {expandedSections.tags ? (
+            <ChevronUp className="h-4 w-4" />
+          ) : (
+            <ChevronDown className="h-4 w-4" />
+          )}
+        </button>
+        {expandedSections.tags && (
+          <div className="flex flex-wrap gap-2">
+            {tags.map((tag) => (
+              <Badge
+                key={tag}
+                variant={filters.tags?.includes(tag) ? "default" : "outline"}
+                className="cursor-pointer"
+                onClick={() => handleTagToggle(tag)}
+              >
+                {tag}
+              </Badge>
             ))}
           </div>
         )}
       </div>
 
       {/* Price Filter */}
-      <div className="mb-6">
+      <div>
         <button
           onClick={() => toggleSection("price")}
-          className="flex justify-between items-center w-full text-left font-medium text-gray-900 dark:text-white mb-3"
+          className="flex justify-between items-center w-full text-left font-medium mb-2 text-sm"
         >
           Price Range
-          {expandedSections.price ? <ChevronUpIcon className="h-5 w-5" /> : <ChevronDownIcon className="h-5 w-5" />}
+          {expandedSections.price ? (
+            <ChevronUp className="h-4 w-4" />
+          ) : (
+            <ChevronDown className="h-4 w-4" />
+          )}
         </button>
         {expandedSections.price && (
           <div className="space-y-2">
             {priceRanges.map((range) => (
-              <label key={range.label} className="flex items-center">
-                <input
-                  type="radio"
-                  name="priceRange"
-                  checked={filters.priceRange[0] === range.min && filters.priceRange[1] === range.max}
-                  onChange={() => handlePriceRangeChange(range.min, range.max)}
-                  className="border-gray-300 text-primary-600 focus:ring-primary-500"
+              <div key={range.label} className="flex items-center space-x-2">
+                <Checkbox
+                  id={range.label}
+                  checked={
+                    filters.priceRange[0] === range.min &&
+                    filters.priceRange[1] === range.max
+                  }
+                  onCheckedChange={() =>
+                    dispatch(
+                      updateFilters({ priceRange: [range.min, range.max] })
+                    )
+                  }
                 />
-                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">{range.label}</span>
-              </label>
+                <Label htmlFor={range.label} className="text-xs">
+                  {range.label}
+                </Label>
+              </div>
             ))}
           </div>
         )}
       </div>
 
       {/* Rating Filter */}
-      <div className="mb-6">
+      <div>
         <button
           onClick={() => toggleSection("rating")}
-          className="flex justify-between items-center w-full text-left font-medium text-gray-900 dark:text-white mb-3"
+          className="flex justify-between items-center w-full text-left font-medium mb-2 text-sm"
         >
-          Rating
-          {expandedSections.rating ? <ChevronUpIcon className="h-5 w-5" /> : <ChevronDownIcon className="h-5 w-5" />}
+          <div className="flex items-center gap-2">
+            <Star className="h-4 w-4" />
+            Rating
+          </div>
+          {expandedSections.rating ? (
+            <ChevronUp className="h-4 w-4" />
+          ) : (
+            <ChevronDown className="h-4 w-4" />
+          )}
         </button>
         {expandedSections.rating && (
           <div className="space-y-2">
             {[4, 3, 2, 1].map((rating) => (
-              <label key={rating} className="flex items-center">
-                <input
-                  type="checkbox"
+              <div key={rating} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`rating-${rating}`}
                   checked={filters.rating === rating}
-                  onChange={() => handleRatingChange(rating)}
-                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  onCheckedChange={() =>
+                    dispatch(
+                      updateFilters({
+                        rating: filters.rating === rating ? 0 : rating,
+                      })
+                    )
+                  }
                 />
-                <span className="ml-2 flex items-center">
+                <Label
+                  htmlFor={`rating-${rating}`}
+                  className="flex items-center text-xs"
+                >
                   {[...Array(5)].map((_, i) => (
-                    <svg
+                    <Star
                       key={i}
-                      className={`h-4 w-4 ${i < rating ? "text-yellow-400 fill-current" : "text-gray-300"}`}
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
+                      className={`h-3 w-3 ${
+                        i < rating
+                          ? "text-yellow-400 fill-current"
+                          : "text-gray-300"
+                      }`}
+                    />
                   ))}
-                  <span className="ml-1 text-sm text-gray-600 dark:text-gray-400">& up</span>
-                </span>
-              </label>
+                  <span className="ml-1">& up</span>
+                </Label>
+              </div>
             ))}
           </div>
         )}
       </div>
     </div>
-  )
+  );
 }
