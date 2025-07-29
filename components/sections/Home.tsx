@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, ShoppingBag, Star } from "lucide-react";
+import { ArrowRight, Sparkles, Star, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -44,7 +44,7 @@ export default function Home() {
   };
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 min-h-screen">
+    <div className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] dark:bg-grid-slate-700/25 dark:[mask-image:linear-gradient(0deg,rgba(255,255,255,0.1),rgba(255,255,255,0.5))]" />
 
@@ -62,7 +62,7 @@ export default function Home() {
             className="lg:grid lg:grid-cols-12 lg:gap-x-8 lg:gap-y-20"
           >
             {/* Content Section */}
-            <div className="relative z-10 lg:col-span-7 lg:max-w-none">
+            <div className="relative z-10 lg:col-span-7 lg:max-w-none lg:pt-20">
               <motion.div variants={itemVariants}>
                 <Badge variant="secondary" className="mb-4 px-3 py-1">
                   <Sparkles className="w-3 h-3 mr-1" />
@@ -82,7 +82,7 @@ export default function Home() {
 
               <motion.p
                 variants={itemVariants}
-                className="mt-6 text-lg text-gray-600 dark:text-gray-300 sm:text-xl lg:text-2xl max-w-2xl"
+                className="mt-6 text-md text-gray-600 dark:text-gray-300 sm:text-lg lg:text-xl max-w-2xl"
               >
                 Experience premium fashion with our Cartify recommendations.
                 Curated collections that match your unique style and personality.
@@ -99,7 +99,7 @@ export default function Home() {
                   <span className="ml-1">Customer Rating</span>
                 </div>
                 <div className="flex items-center">
-                  <ShoppingBag className="w-4 h-4 text-blue-500 mr-1" />
+                  <Users className="w-4 h-4 text-blue-500 mr-1" />
                   <span className="font-semibold">10K+</span>
                   <span className="ml-1">Happy Customers</span>
                 </div>
@@ -116,13 +116,13 @@ export default function Home() {
                 className="mt-10 flex flex-col sm:flex-row gap-4"
               >
                 <Button size="lg" className="group" asChild>
-                  <Link href="/products">
+                  <Link href="#collections">
                     Shop Collection
                     <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </Button>
                 <Button variant="outline" size="lg" asChild>
-                  <Link href="/categories">Browse Categories</Link>
+                  <Link href="#categories">Browse Categories</Link>
                 </Button>
               </motion.div>
 

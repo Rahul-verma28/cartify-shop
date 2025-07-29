@@ -9,8 +9,8 @@ import { ArrowLeft } from "lucide-react";
 import { ProductImageGallery } from "@/components/products/ProductImageGallery";
 import { ProductInfo } from "@/components/products/ProductInfo";
 import ProductReviews from "@/components/products/ProductReviews";
-import RelatedProducts from "@/components/products/RelatedProducts";
 import { RootState } from "@/lib/redux/store";
+import RecommendedProducts from "@/components/cart/RecommendedProducts";
 
 interface ProductPageProps {
   params: Promise<{
@@ -60,7 +60,6 @@ export default function ProductPage({ params }: ProductPageProps) {
 
         setProduct(productData);
         setLoading(false);
-
       } catch (error) {
         console.error("Error in fetchProduct:", error);
         setProduct(null);
@@ -103,6 +102,11 @@ export default function ProductPage({ params }: ProductPageProps) {
     );
   }
 
+  const categorySlug = product?.category
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
   const handleShare = async () => {
     if (navigator.share) {
       try {
@@ -138,7 +142,7 @@ export default function ProductPage({ params }: ProductPageProps) {
             </Link>
             <span>/</span>
             <Link
-              href={`/category/${product.category}`}
+              href={`/category/${categorySlug}`}
               className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors capitalize"
             >
               {product.category?.replace("-", " ")}
@@ -195,10 +199,10 @@ export default function ProductPage({ params }: ProductPageProps) {
         {/* Reviews Section */}
         <ProductReviews productSlug={product.slug} />
       </div>
-      {/* <RelatedProducts
-        category={product?.category}
-        currentProductId={product?._id}
-      /> */}
+      {/* Recommended Products */}
+      <div className="pb-6 container mx-auto px-4 sm:px-6 lg:px-12">
+        <RecommendedProducts cartItems={[product]} />
+      </div>
     </div>
   );
 }

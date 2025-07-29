@@ -385,12 +385,42 @@ export default function CategoryPage({
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
-                  <SelectItem value="newest" className="text-gray-900 dark:text-gray-100">Newest First</SelectItem>
-                  <SelectItem value="price-low" className="text-gray-900 dark:text-gray-100">Price: Low to High</SelectItem>
-                  <SelectItem value="price-high" className="text-gray-900 dark:text-gray-100">Price: High to Low</SelectItem>
-                  <SelectItem value="rating" className="text-gray-900 dark:text-gray-100">Highest Rated</SelectItem>
-                  <SelectItem value="popular" className="text-gray-900 dark:text-gray-100">Most Popular</SelectItem>
-                  <SelectItem value="name" className="text-gray-900 dark:text-gray-100">Name: A to Z</SelectItem>
+                  <SelectItem
+                    value="newest"
+                    className="text-gray-900 dark:text-gray-100"
+                  >
+                    Newest First
+                  </SelectItem>
+                  <SelectItem
+                    value="price-low"
+                    className="text-gray-900 dark:text-gray-100"
+                  >
+                    Price: Low to High
+                  </SelectItem>
+                  <SelectItem
+                    value="price-high"
+                    className="text-gray-900 dark:text-gray-100"
+                  >
+                    Price: High to Low
+                  </SelectItem>
+                  <SelectItem
+                    value="rating"
+                    className="text-gray-900 dark:text-gray-100"
+                  >
+                    Highest Rated
+                  </SelectItem>
+                  <SelectItem
+                    value="popular"
+                    className="text-gray-900 dark:text-gray-100"
+                  >
+                    Most Popular
+                  </SelectItem>
+                  <SelectItem
+                    value="name"
+                    className="text-gray-900 dark:text-gray-100"
+                  >
+                    Name: A to Z
+                  </SelectItem>
                 </SelectContent>
               </Select>
 
@@ -405,12 +435,42 @@ export default function CategoryPage({
                   <SelectValue placeholder="Price" />
                 </SelectTrigger>
                 <SelectContent className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
-                  <SelectItem value="all" className="text-gray-900 dark:text-gray-100">All Prices</SelectItem>
-                  <SelectItem value="0-25" className="text-gray-900 dark:text-gray-100">Under $25</SelectItem>
-                  <SelectItem value="25-50" className="text-gray-900 dark:text-gray-100">$25 - $50</SelectItem>
-                  <SelectItem value="50-100" className="text-gray-900 dark:text-gray-100">$50 - $100</SelectItem>
-                  <SelectItem value="100-200" className="text-gray-900 dark:text-gray-100">$100 - $200</SelectItem>
-                  <SelectItem value="200" className="text-gray-900 dark:text-gray-100">Over $200</SelectItem>
+                  <SelectItem
+                    value="all"
+                    className="text-gray-900 dark:text-gray-100"
+                  >
+                    All Prices
+                  </SelectItem>
+                  <SelectItem
+                    value="0-25"
+                    className="text-gray-900 dark:text-gray-100"
+                  >
+                    Under $25
+                  </SelectItem>
+                  <SelectItem
+                    value="25-50"
+                    className="text-gray-900 dark:text-gray-100"
+                  >
+                    $25 - $50
+                  </SelectItem>
+                  <SelectItem
+                    value="50-100"
+                    className="text-gray-900 dark:text-gray-100"
+                  >
+                    $50 - $100
+                  </SelectItem>
+                  <SelectItem
+                    value="100-200"
+                    className="text-gray-900 dark:text-gray-100"
+                  >
+                    $100 - $200
+                  </SelectItem>
+                  <SelectItem
+                    value="200"
+                    className="text-gray-900 dark:text-gray-100"
+                  >
+                    Over $200
+                  </SelectItem>
                 </SelectContent>
               </Select>
 
@@ -423,10 +483,30 @@ export default function CategoryPage({
                   <SelectValue placeholder="Rating" />
                 </SelectTrigger>
                 <SelectContent className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
-                  <SelectItem value="all" className="text-gray-900 dark:text-gray-100">All Ratings</SelectItem>
-                  <SelectItem value="4" className="text-gray-900 dark:text-gray-100">4+ Stars</SelectItem>
-                  <SelectItem value="3" className="text-gray-900 dark:text-gray-100">3+ Stars</SelectItem>
-                  <SelectItem value="2" className="text-gray-900 dark:text-gray-100">2+ Stars</SelectItem>
+                  <SelectItem
+                    value="all"
+                    className="text-gray-900 dark:text-gray-100"
+                  >
+                    All Ratings
+                  </SelectItem>
+                  <SelectItem
+                    value="4"
+                    className="text-gray-900 dark:text-gray-100"
+                  >
+                    4+ Stars
+                  </SelectItem>
+                  <SelectItem
+                    value="3"
+                    className="text-gray-900 dark:text-gray-100"
+                  >
+                    3+ Stars
+                  </SelectItem>
+                  <SelectItem
+                    value="2"
+                    className="text-gray-900 dark:text-gray-100"
+                  >
+                    2+ Stars
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -487,79 +567,6 @@ export default function CategoryPage({
               ))}
             </div>
           )}
-        </div>
-      </section>
-
-      {/* Category Features */}
-      <section className="py-16 bg-white dark:bg-gray-800">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-gray-100">
-              Why Shop {category.title}?
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Discover the benefits of our {category.title.toLowerCase()}{" "}
-              collection.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="text-center p-6 rounded-xl bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
-            >
-              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Award className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">Premium Quality</h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Hand-selected products that meet our high standards for quality
-                and performance.
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="text-center p-6 rounded-xl bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
-            >
-              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/40 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="w-8 h-8 text-green-600 dark:text-green-400" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">Customer Approved</h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Products loved by thousands of customers with verified reviews
-                and ratings.
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-              className="text-center p-6 rounded-xl bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors"
-            >
-              <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/40 rounded-full flex items-center justify-center mx-auto mb-4">
-                <TrendingUp className="w-8 h-8 text-purple-600 dark:text-purple-400" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">Best Value</h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Competitive prices and regular promotions to ensure you get the
-                best deals.
-              </p>
-            </motion.div>
-          </div>
         </div>
       </section>
     </div>

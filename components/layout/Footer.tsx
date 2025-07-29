@@ -21,28 +21,29 @@ export default function Footer() {
   const footerLinks = {
     products: [
       { name: "All Products", href: "/products" },
-      { name: "Categories", href: "/categories" },
-      { name: "New Arrivals", href: "/new-arrivals" },
+      { name: "Categories", href: "/#categories" },
+      { name: "Collections", href: "/#collections" },
+      { name: "New Arrivals", href: "/" },
       { name: "Deals", href: "/deals" },
     ],
     company: [
-      { name: "About Us", href: "/about" },
-      { name: "Careers", href: "/careers" },
-      { name: "Press", href: "/press" },
-      { name: "Blog", href: "/blog" },
+      { name: "About Us", href: "/" },
+      { name: "Careers", href: "/" },
+      { name: "Press", href: "/" },
+      { name: "Blog", href: "/" },
     ],
     support: [
-      { name: "Contact Us", href: "/contact" },
-      { name: "FAQ", href: "/faq" },
-      { name: "Shipping Info", href: "/shipping" },
-      { name: "Returns", href: "/returns" },
-      { name: "Support", href: "/support" },
+      { name: "Contact Us", href: "/" },
+      { name: "FAQ", href: "/" },
+      { name: "Shipping Info", href: "/" },
+      { name: "Returns", href: "/" },
+      { name: "Support", href: "/" },
     ],
     legal: [
-      { name: "Privacy Policy", href: "/privacy" },
-      { name: "Terms of Service", href: "/terms" },
-      { name: "Cookie Policy", href: "/cookies" },
-      { name: "AI Assistant", href: "/ai-assistant" },
+      { name: "Privacy Policy", href: "/" },
+      { name: "Terms of Service", href: "/" },
+      { name: "Cookie Policy", href: "/" },
+      { name: "AI Assistant", href: "/" },
     ],
   };
 
@@ -170,6 +171,7 @@ export default function Footer() {
                 <Link
                   key={social.name}
                   href={social.href}
+                  target="_blank"
                   className="text-gray-400 hover:text-white transition-colors"
                 >
                   <social.icon className="w-5 h-5" />

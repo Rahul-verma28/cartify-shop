@@ -42,7 +42,7 @@ export default function CartDrawer() {
 
   return (
     <Sheet open={isCartDrawerOpen} onOpenChange={handleClose}>
-      <SheetContent side="right" className="w-full sm:max-w-md">
+      <SheetContent side="right" className="w-full sm:max-w-md p-4">
         <SheetHeader>
           <SheetTitle>Shopping Cart ({itemCount})</SheetTitle>
           <SheetDescription>
@@ -69,9 +69,9 @@ export default function CartDrawer() {
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
-                      className="flex gap-4 p-4 border rounded-lg"
+                      className="flex gap-4 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-sm"
                     >
-                      <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border">
+                      <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border">
                         <Image
                           src={
                             item.product?.images?.[0] ||
@@ -87,7 +87,7 @@ export default function CartDrawer() {
                       <div className="flex flex-1 flex-col">
                         <div className="flex justify-between">
                           <div className="flex-1">
-                            <h4 className="text-sm font-medium">
+                            <h4 className="text-xs font-medium">
                               <Link
                                 href={`/products/${item.product?.slug}`}
                                 onClick={handleClose}
@@ -96,7 +96,7 @@ export default function CartDrawer() {
                                 {item.product?.title}
                               </Link>
                             </h4>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-xs text-muted-foreground">
                               {item.product?.category}
                             </p>
                           </div>
@@ -164,11 +164,18 @@ export default function CartDrawer() {
               </p>
               
               <div className="space-y-2">
-                <Button asChild className="w-full">
+                <div className="grid grid-cols-2 gap-2">
+                  <Button asChild className="w-full">
                   <Link href="/checkout" onClick={handleClose}>
                     Checkout
                   </Link>
                 </Button>
+                  <Button asChild className="w-full">
+                  <Link href="/cart" onClick={handleClose}>
+                    Go Cart
+                  </Link>
+                </Button>
+                </div>
                 
                 <Button 
                   variant="outline" 
