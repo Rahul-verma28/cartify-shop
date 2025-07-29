@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Admin Dashboard - ModernShop",
+  title: "Admin Dashboard - CartifyShop",
   description: "Admin panel for managing the e-commerce platform",
 };
 

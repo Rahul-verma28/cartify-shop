@@ -84,7 +84,7 @@ export default function Home() {
                 variants={itemVariants}
                 className="mt-6 text-lg text-gray-600 dark:text-gray-300 sm:text-xl lg:text-2xl max-w-2xl"
               >
-                Experience premium fashion with our AI-powered recommendations.
+                Experience premium fashion with our Cartify recommendations.
                 Curated collections that match your unique style and personality.
               </motion.p>
 

@@ -101,7 +101,7 @@ export default function AdminSidebar({
                     M
                   </span>
                   <h2 className="text-lg font-semibold tracking-tight">
-                    ModernShop
+                    CartifyShop
                   </h2> */}
                 </div>
                 <Button
@@ -162,7 +162,7 @@ export default function AdminSidebar({
               M
             </span>
             <h2 className="text-lg font-semibold tracking-tight">
-              ModernShop
+              CartifyShop
             </h2>
           </div>
         )}

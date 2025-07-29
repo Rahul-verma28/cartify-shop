@@ -34,7 +34,7 @@ import { toast } from "sonner"
 export default function AdminSettingsPage() {
   const [storeDetails, setStoreDetails] = useState({
     name: "Modern Shop",
-    email: "contact@modernshop.com",
+    email: "contact@CartifyShop.com",
     phone: "+1 (555) 123-4567",
     address: "123 E-Commerce St, Digital City, 90210",
     currency: "USD",

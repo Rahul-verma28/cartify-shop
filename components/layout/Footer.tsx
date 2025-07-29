@@ -1,11 +1,21 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { motion } from "framer-motion"
-import { ShoppingBag, Mail, Phone, MapPin, Twitter, Github, Linkedin, Instagram } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator"
+import Link from "next/link";
+import { motion } from "framer-motion";
+import {
+  ShoppingBag,
+  Mail,
+  Phone,
+  MapPin,
+  Twitter,
+  Github,
+  Linkedin,
+  Instagram,
+  Link2,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 
 export default function Footer() {
   const footerLinks = {
@@ -34,14 +44,14 @@ export default function Footer() {
       { name: "Cookie Policy", href: "/cookies" },
       { name: "AI Assistant", href: "/ai-assistant" },
     ],
-  }
+  };
 
   const socialLinks = [
     { name: "Twitter", icon: Twitter, href: "#" },
-    { name: "GitHub", icon: Github, href: "#" },
-    { name: "LinkedIn", icon: Linkedin, href: "#" },
+    { name: "GitHub", icon: Github, href: "https://github.com/Rahul-verma28" },
+    { name: "LinkedIn", icon: Linkedin, href: "https://www.linkedin.com/in/rahul-verma-09227a263" },
     { name: "Instagram", icon: Instagram, href: "#" },
-  ]
+  ];
 
   return (
     <footer className="bg-gray-950 text-white border-t border-gray-800">
@@ -62,26 +72,31 @@ export default function Footer() {
                     <ShoppingBag className="w-5 h-5 text-white" />
                   </div>
                   <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                    ModernShop
+                    CartifyShop
                   </span>
                 </Link>
 
                 <p className="text-gray-300 mb-6 max-w-sm">
-                  Experience the future of shopping with our AI-powered e-commerce platform. Discover premium products with
-                  intelligent recommendations.
+                  Experience the future of shopping with our Cartify e-commerce
+                  platform. Discover premium products with intelligent
+                  recommendations.
                 </p>
 
                 {/* Newsletter Signup */}
                 <div className="space-y-3">
                   <h4 className="font-semibold text-white">Stay Updated</h4>
                   <div className="flex space-x-2">
-                    <Input placeholder="Enter your email" className="flex-1 bg-gray-800 border-gray-700 text-white placeholder-gray-400" />
+                    <Input
+                      placeholder="Enter your email"
+                      className="flex-1 bg-gray-800 border-gray-700 text-white placeholder-gray-400"
+                    />
                     <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
                       <Mail className="w-4 h-4" />
                     </Button>
                   </div>
                   <p className="text-xs text-gray-400">
-                    Get the latest products and exclusive offers delivered to your inbox.
+                    Get the latest products and exclusive offers delivered to
+                    your inbox.
                   </p>
                 </div>
               </motion.div>
@@ -98,7 +113,9 @@ export default function Footer() {
                     transition={{ duration: 0.6, delay: index * 0.1 }}
                     viewport={{ once: true }}
                   >
-                    <h4 className="font-semibold mb-4 capitalize text-white">{category}</h4>
+                    <h4 className="font-semibold mb-4 capitalize text-white">
+                      {category}
+                    </h4>
                     <ul className="space-y-3">
                       {links.map((link) => (
                         <li key={link.name}>
@@ -130,7 +147,15 @@ export default function Footer() {
               viewport={{ once: true }}
               className="text-sm text-gray-400"
             >
-              © 2024 ModernShop. All rights reserved. Built with ❤️ for the shopping community.
+              © 2024 CartifyShop. All rights reserved. Built and Developed by{" "}
+              <Link
+                href="https://www.linkedin.com/in/rahul-verma-09227a263/"
+                target="_blank"
+                className="hover:underline text-blue-500 font-bold"
+              >
+                Rahul Verma <Link2 className="inline h-4 w-4" />
+              </Link>{" "}
+              with ❤️ for the shopping community.
             </motion.div>
 
             {/* Social Links */}
@@ -166,7 +191,7 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8 text-sm text-gray-400">
             <div className="flex items-center space-x-2">
               <Mail className="w-4 h-4" />
-              <span>support@modernshop.com</span>
+              <span>support@CartifyShop.com</span>
             </div>
             <div className="flex items-center space-x-2">
               <Phone className="w-4 h-4" />
@@ -180,5 +205,5 @@ export default function Footer() {
         </motion.div>
       </div>
     </footer>
-  )
+  );
 }

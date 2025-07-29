@@ -11,22 +11,22 @@ import Footer from "@/components/layout/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "ModernShop - Premium E-commerce Experience",
-  description: "Discover premium products with AI-powered shopping assistance",
+  title: "CartifyShop - Premium E-commerce Experience",
+  description: "Discover premium products with Cartify shopping assistance",
   keywords: "ecommerce, shopping, premium products, AI assistant",
-  authors: [{ name: "ModernShop Team" }],
+  authors: [{ name: "CartifyShop Team" }],
   openGraph: {
-    title: "ModernShop - Premium E-commerce Experience",
+    title: "CartifyShop - Premium E-commerce Experience",
     description:
-      "Discover premium products with AI-powered shopping assistance",
+      "Discover premium products with Cartify shopping assistance",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "ModernShop - Premium E-commerce Experience",
+    title: "CartifyShop - Premium E-commerce Experience",
     description:
-      "Discover premium products with AI-powered shopping assistance",
+      "Discover premium products with Cartify shopping assistance",
   },
   robots: {
     index: true,

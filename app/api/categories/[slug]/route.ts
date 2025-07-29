@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import connectDB from "@/lib/mongoDB"
-import Collection from "@/lib/models/Collection"
+import Category from "@/lib/models/Category"
 import { isValidObjectId } from "mongoose"
 
 export async function GET(
@@ -23,17 +23,15 @@ export async function GET(
       query.slug = slug
     }
 
-    const collection = await Collection.findOne(query)
-      .populate("products", "title slug price images rating inventory featured")
-      .lean()
+    const category = await Category.findOne(query).lean()
 
-    if (!collection) {
-      return NextResponse.json({ error: "Collection not found" }, { status: 404 })
+    if (!category) {
+      return NextResponse.json({ error: "Category not found" }, { status: 404 })
     }
 
-    return NextResponse.json(collection)
+    return NextResponse.json(category)
   } catch (error) {
-    console.error("Error fetching collection:", error)
-    return NextResponse.json({ error: "Failed to fetch collection" }, { status: 500 })
+    console.error("Error fetching category:", error)
+    return NextResponse.json({ error: "Failed to fetch category" }, { status: 500 })
   }
 }

@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
       model: openai("gpt-4o"),
       messages,
       system:
-        "You are a helpful e-commerce shopping assistant for ModernShop. Your goal is to assist users in finding products, answering questions about products, and guiding them through the shopping experience. Be concise and helpful. Do not provide information outside of e-commerce or ModernShop products?.",
+        "You are a helpful e-commerce shopping assistant for CartifyShop. Your goal is to assist users in finding products, answering questions about products, and guiding them through the shopping experience. Be concise and helpful. Do not provide information outside of e-commerce or CartifyShop products?.",
     })
 
     return result.to

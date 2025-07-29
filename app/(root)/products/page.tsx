@@ -5,7 +5,7 @@ import ProductsLoading from "@/components/products/ProductsLoading";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Products - ModernShop",
+  title: "Products - CartifyShop",
   description: "Browse our extensive collection of premium products",
 };
 

@@ -30,8 +30,8 @@ export interface Product {
     average: number
     count: number
   }
-  size: string[]
-  color: string[]
+  size?: string[]
+  color?: string[]
   collections?: string[]
   inventory: number
   featured: boolean
@@ -52,10 +52,10 @@ export interface Category {
 export interface Collection {
   _id: string
   title: string
-  slug: string
+  slug?: string
   description?: string
   image: string
-  products: Product[]
+  products?: Product[]
   createdAt: Date
   updatedAt: Date
 }

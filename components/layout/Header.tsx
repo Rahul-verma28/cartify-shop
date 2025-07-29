@@ -61,7 +61,7 @@
 //             <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
 //               <span className="text-white font-bold text-lg">M</span>
 //             </div>
-//             <span className="text-xl font-bold text-gray-900 dark:text-white">ModernShop</span>
+//             <span className="text-xl font-bold text-gray-900 dark:text-white">CartifyShop</span>
 //           </Link>
 
 //           {/* Search Bar */}
@@ -327,7 +327,7 @@ export default function Header() {
               </div>
             </motion.div>
             <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              ModernShop
+              CartifyShop
             </span>
           </Link>
 

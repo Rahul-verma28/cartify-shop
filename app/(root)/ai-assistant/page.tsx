@@ -1,9 +1,9 @@
 import AIChat from "@/components/ai/AIChat";
 
 export const metadata = {
-  title: "AI Assistant - ModernShop",
+  title: "AI Assistant - CartifyShop",
   description:
-    "Get personalized shopping assistance with our AI-powered chatbot.",
+    "Get personalized shopping assistance with our Cartify chatbot.",
 };
 
 export default function AIAssistantPage() {
