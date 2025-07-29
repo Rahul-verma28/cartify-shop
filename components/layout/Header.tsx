@@ -696,9 +696,13 @@ import {
 import ThemeToggle from "../ThemeToggle";
 import { useNavigation } from "@/hooks/useNavigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { updateFilters } from "@/lib/redux/slices/productsSlice";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const { data: session } = useSession();
+  const router = useRouter();
+
   const dispatch = useDispatch();
   const { itemCount } = useSelector((state: RootState) => state.cart);
   const wishlistItems = useSelector(
@@ -724,7 +728,10 @@ export default function Header() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(setSearchQuery(searchInput));
+    if (!searchInput.trim()) return;
+    router.push("/products");
+    dispatch(updateFilters({ search: searchInput }));
+    setSearchInput("");
   };
 
   const handleLogout = async () => {
@@ -856,7 +863,10 @@ export default function Header() {
             className="hidden md:flex flex-1 max-w-md mx-8"
           >
             <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <Search
+                onSubmit={handleSearch}
+                className="absolute left-3 cursor-pointer top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 z-10"
+              />
               <Input
                 placeholder="Search products..."
                 value={searchInput}
@@ -1003,7 +1013,10 @@ export default function Header() {
                   <div className="px-6">
                     <form onSubmit={handleSearch}>
                       <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                        <Search
+                          onSubmit={handleSearch}
+                          className="absolute left-3 cursor-pointer top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 z-10"
+                        />{" "}
                         <Input
                           placeholder="Search products..."
                           value={searchInput}
@@ -1137,72 +1150,6 @@ export default function Header() {
                       </CollapsibleContent>
                     </Collapsible>
                   </div>
-
-                  {/* Categories */}
-                  {/* <div className="px-6">
-                    <h3 className="text-sm font-semibold text-muted-foreground mb-3">
-                      Categories
-                    </h3>
-                    <div className="space-y-2">
-                      {loading.categories ? (
-                        <div className="space-y-2">
-                          {[...Array(4)].map((_, i) => (
-                            <Skeleton key={i} className="h-8 w-full" />
-                          ))}
-                        </div>
-                      ) : (
-                        categories.map((category) => (
-                          <Link
-                            key={category._id}
-                            href={`/category/${category.slug}`}
-                            className="block py-2 px-3 text-sm rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
-                            onClick={closeMobileMenu}
-                          >
-                            {category.title}
-                          </Link>
-                        ))
-                      )}
-                      {errors.categories && (
-                        <p className="text-xs text-red-500 px-3">
-                          Using fallback categories
-                        </p>
-                      )}
-                    </div>
-                  </div> */}
-
-                  {/* <Separator /> */}
-
-                  {/* Collections */}
-                  {/* <div className="px-6">
-                    <h3 className="text-sm font-semibold text-muted-foreground mb-3">
-                      Collections
-                    </h3>
-                    <div className="space-y-2">
-                      {loading.collections ? (
-                        <div className="space-y-2">
-                          {[...Array(3)].map((_, i) => (
-                            <Skeleton key={i} className="h-8 w-full" />
-                          ))}
-                        </div>
-                      ) : (
-                        collections.map((collection) => (
-                          <Link
-                            key={collection._id}
-                            href={`/collection/${collection.slug}`}
-                            className="block py-2 px-3 text-sm rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
-                            onClick={closeMobileMenu}
-                          >
-                            {collection.title}
-                          </Link>
-                        ))
-                      )}
-                      {errors.collections && (
-                        <p className="text-xs text-red-500 px-3">
-                          Using fallback collections
-                        </p>
-                      )}
-                    </div>
-                  </div> */}
 
                   <Separator />
 

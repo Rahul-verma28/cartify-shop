@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/lib/redux/store";
 import { updateFilters, resetFilters } from "@/lib/redux/slices/productsSlice";
+import { useNavigation } from "@/hooks/useNavigation";
 import {
   ChevronDown,
   ChevronUp,
@@ -19,8 +20,10 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const categories = [
+// Keep fallback data for other filters that don't come from API
+const fallbackCategories = [
   "Electronics",
   "Fashion",
   "Home & Garden",
@@ -55,6 +58,10 @@ const tags = ["Sale", "New", "Popular", "Limited", "Bestseller", "Trending"];
 export default function ProductFilters() {
   const dispatch = useDispatch();
   const { filters } = useSelector((state: RootState) => state.products);
+  
+  // Get real-time categories and collections from navigation slice
+  const { categories, collections, loading, errors } = useNavigation();
+  
   const [expandedSections, setExpandedSections] = useState({
     search: true,
     category: true,
@@ -66,22 +73,6 @@ export default function ProductFilters() {
     tags: false,
     featured: true,
   });
-  const [collections, setCollections] = useState([]);
-
-  useEffect(() => {
-    // Fetch collections for filter
-    fetchCollections();
-  }, []);
-
-  const fetchCollections = async () => {
-    try {
-      const response = await fetch("/api/collections");
-      const data = await response.json();
-      setCollections(data);
-    } catch (error) {
-      console.error("Failed to fetch collections:", error);
-    }
-  };
 
   const toggleSection = (section: keyof typeof expandedSections) => {
     setExpandedSections((prev) => ({
@@ -146,6 +137,13 @@ export default function ProductFilters() {
   const handleReset = () => {
     dispatch(resetFilters());
   };
+
+  // Use real categories or fallback
+  const displayCategories = categories.length > 0 ? categories : fallbackCategories.map(cat => ({
+    _id: cat.toLowerCase(),
+    title: cat,
+    slug: cat.toLowerCase()
+  }));
 
   return (
     <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 space-y-4">
@@ -223,20 +221,35 @@ export default function ProductFilters() {
         </button>
         {expandedSections.category && (
           <div className="space-y-2">
-            {categories.map((category) => (
-              <div key={category} className="flex items-center space-x-2">
-                <Checkbox
-                  id={category}
-                  checked={filters.category === category.toLowerCase()}
-                  onCheckedChange={() =>
-                    handleCategoryChange(category.toLowerCase())
-                  }
-                />
-                <Label htmlFor={category} className="text-xs">
-                  {category}
-                </Label>
-              </div>
-            ))}
+            {loading.categories ? (
+              // Loading skeleton for categories
+              [...Array(4)].map((_, i) => (
+                <div key={i} className="flex items-center space-x-2">
+                  <Skeleton className="h-4 w-4" />
+                  <Skeleton className="h-4 w-20" />
+                </div>
+              ))
+            ) : (
+              displayCategories.map((category) => (
+                <div key={category._id || category.slug} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={category.slug || category._id}
+                    checked={filters.category === (category.slug || category._id)}
+                    onCheckedChange={() =>
+                      handleCategoryChange(category.slug || category._id)
+                    }
+                  />
+                  <Label htmlFor={category.slug || category._id} className="text-xs">
+                    {category.title}
+                  </Label>
+                </div>
+              ))
+            )}
+            {errors.categories && (
+              <p className="text-xs text-amber-600 dark:text-amber-400">
+                ⚠️ Using fallback categories
+              </p>
+            )}
           </div>
         )}
       </div>
@@ -256,18 +269,37 @@ export default function ProductFilters() {
         </button>
         {expandedSections.collection && (
           <div className="space-y-2">
-            {collections?.map((collection: any) => (
-              <div key={collection?._id} className="flex items-center space-x-2 text-xs">
-                <Checkbox
-                  id={collection?._id}
-                  checked={filters.collection === collection?._id}
-                  onCheckedChange={() => handleCollectionChange(collection?._id)}
-                />
-                <Label htmlFor={collection?._id} className="text-sm">
-                  {collection?.title}
-                </Label>
-              </div>
-            ))}
+            {loading.collections ? (
+              // Loading skeleton for collections
+              [...Array(3)].map((_, i) => (
+                <div key={i} className="flex items-center space-x-2">
+                  <Skeleton className="h-4 w-4" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+              ))
+            ) : collections.length > 0 ? (
+              collections.map((collection) => (
+                <div key={collection._id} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={collection._id}
+                    checked={filters.collection === collection._id}
+                    onCheckedChange={() => handleCollectionChange(collection._id)}
+                  />
+                  <Label htmlFor={collection._id} className="text-xs">
+                    {collection.title}
+                  </Label>
+                </div>
+              ))
+            ) : (
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                No collections available
+              </p>
+            )}
+            {errors.collections && (
+              <p className="text-xs text-amber-600 dark:text-amber-400">
+                ⚠️ Using fallback collections
+              </p>
+            )}
           </div>
         )}
       </div>
