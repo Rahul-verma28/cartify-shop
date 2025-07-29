@@ -27,13 +27,13 @@ export default function Footer() {
       { name: "Deals", href: "/deals" },
     ],
     company: [
-      { name: "About Us", href: "/" },
+      { name: "About Us", href: "/about" },
       { name: "Careers", href: "/" },
       { name: "Press", href: "/" },
       { name: "Blog", href: "/" },
     ],
     support: [
-      { name: "Contact Us", href: "/" },
+      { name: "Contact Us", href: "/contact" },
       { name: "FAQ", href: "/" },
       { name: "Shipping Info", href: "/" },
       { name: "Returns", href: "/" },
@@ -69,10 +69,10 @@ export default function Footer() {
                 viewport={{ once: true }}
               >
                 <Link href="/" className="flex items-center space-x-2 mb-4">
-                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 bg-blue-500 hover:bg-blue-600 text-white rounded-lg flex items-center justify-center">
                     <ShoppingBag className="w-5 h-5 text-white" />
                   </div>
-                  <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                  <span className="text-xl font-bold text-blue-500">
                     CartifyShop
                   </span>
                 </Link>
@@ -91,7 +91,7 @@ export default function Footer() {
                       placeholder="Enter your email"
                       className="flex-1 bg-gray-800 border-gray-700 text-white placeholder-gray-400"
                     />
-                    <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
+                    <Button className="bg-blue-500 hover:bg-blue-600 text-white">
                       <Mail className="w-4 h-4" />
                     </Button>
                   </div>
@@ -122,7 +122,7 @@ export default function Footer() {
                         <li key={link.name}>
                           <Link
                             href={link.href}
-                            className="text-gray-300 hover:text-white transition-colors text-sm"
+                            className="text-gray-300 hover:text-blue-500 hover:underline transition-colors text-sm"
                           >
                             {link.name}
                           </Link>
@@ -172,7 +172,7 @@ export default function Footer() {
                   key={social.name}
                   href={social.href}
                   target="_blank"
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-gray-400 hover:text-blue-500 transition-colors"
                 >
                   <social.icon className="w-5 h-5" />
                   <span className="sr-only">{social.name}</span>
@@ -193,7 +193,7 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8 text-sm text-gray-400">
             <div className="flex items-center space-x-2">
               <Mail className="w-4 h-4" />
-              <span>support@CartifyShop.com</span>
+              <span>rahulverma281202@gmail.com</span>
             </div>
             <div className="flex items-center space-x-2">
               <Phone className="w-4 h-4" />
@@ -201,7 +201,7 @@ export default function Footer() {
             </div>
             <div className="flex items-center space-x-2">
               <MapPin className="w-4 h-4" />
-              <span>New York, NY</span>
+              <span>Greater Noida, IN</span>
             </div>
           </div>
         </motion.div>

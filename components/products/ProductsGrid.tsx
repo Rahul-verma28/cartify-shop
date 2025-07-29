@@ -46,12 +46,18 @@ export default function ProductsGrid() {
       const params = new URLSearchParams({
         page: pagination.page.toString(),
         limit: pagination.limit.toString(),
-        ...(filters.category && filters.category !== "all" && { category: filters.category }),
-        ...(filters.collection && filters.collection !== "all" && { collection: filters.collection }),
+        ...(filters.category &&
+          filters.category !== "all" && { category: filters.category }),
+        ...(filters.collection &&
+          filters.collection !== "all" && { collection: filters.collection }),
         ...(filters.search && { search: filters.search }),
         ...(filters.featured && { featured: "true" }),
-        ...(filters.priceRange[0] > 0 && { minPrice: filters.priceRange[0].toString() }),
-        ...(filters.priceRange[1] < 1000 && { maxPrice: filters.priceRange[1].toString() }),
+        ...(filters.priceRange[0] > 0 && {
+          minPrice: filters.priceRange[0].toString(),
+        }),
+        ...(filters.priceRange[1] < 1000 && {
+          maxPrice: filters.priceRange[1].toString(),
+        }),
         ...(filters.rating > 0 && { rating: filters.rating.toString() }),
         ...(filters.size?.length && { size: filters.size.join(",") }),
         ...(filters.color?.length && { color: filters.color.join(",") }),
@@ -80,13 +86,23 @@ export default function ProductsGrid() {
 
   const handleSortChange = (value: string) => {
     const [sortBy, order] = value.split("-");
-    const validOrder = order === "asc" || order === "desc"
-      ? order
-      : (sortBy === "newest" ? "desc" : "asc");
-    dispatch(updateFilters({ 
-      sortBy: sortBy === "newest" ? "createdAt" : sortBy === "rating" ? "rating.average" : sortBy,
-      order: validOrder
-    }));
+    const validOrder =
+      order === "asc" || order === "desc"
+        ? order
+        : sortBy === "newest"
+        ? "desc"
+        : "asc";
+    dispatch(
+      updateFilters({
+        sortBy:
+          sortBy === "newest"
+            ? "createdAt"
+            : sortBy === "rating"
+            ? "rating.average"
+            : sortBy,
+        order: validOrder,
+      })
+    );
   };
 
   const goToPage = (page: number) => {
@@ -142,7 +158,7 @@ export default function ProductsGrid() {
           </AlertDescription>
         </Alert>
         <Button
-          onClick={() => fetchProducts()}
+          onClick={() => window.location.reload()}
           variant="outline"
           className="mt-4"
         >
@@ -162,6 +178,13 @@ export default function ProductsGrid() {
           We couldn't find any products matching your criteria. Try adjusting
           your filters or check back later.
         </p>
+        <Button
+          onClick={() => window.location.reload()}
+          variant="outline"
+          className="mt-4"
+        >
+          Try Again
+        </Button>
       </div>
     );
   }
@@ -223,7 +246,11 @@ export default function ProductsGrid() {
                 transition={{ duration: 0.3 }}
                 className="relative"
               >
-                <ProductCard product={product} showDescription={false} showCategory={false}/>
+                <ProductCard
+                  product={product}
+                  showDescription={false}
+                  showCategory={false}
+                />
                 <div className="absolute inset-0 bg-white/50 dark:bg-gray-900/50 flex items-center justify-center">
                   <Loader2 className="h-6 w-6 animate-spin" />
                 </div>
@@ -267,7 +294,11 @@ export default function ProductsGrid() {
               transition={{ duration: 0.5, delay: Math.min(index * 0.05, 0.5) }}
               whileHover={{ y: -4 }}
             >
-              <ProductCard product={product} showDescription={false} showCategory={false}/>
+              <ProductCard
+                product={product}
+                showDescription={false}
+                showCategory={false}
+              />
             </motion.div>
           ))
         )}
@@ -275,7 +306,7 @@ export default function ProductsGrid() {
 
       {/* Pagination Controls */}
       {(pagination.pages > 1 || loading) && (
-        <motion.div 
+        <motion.div
           className="flex flex-col items-center gap-4 pt-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -306,37 +337,42 @@ export default function ProductsGrid() {
                   "Previous"
                 )}
               </Button>
-              
+
               <div className="flex items-center gap-1">
-                {Array.from({ length: Math.min(5, pagination.pages) }, (_, i) => {
-                  let pageNum;
-                  if (pagination.pages <= 5) {
-                    pageNum = i + 1;
-                  } else if (pagination.page <= 3) {
-                    pageNum = i + 1;
-                  } else if (pagination.page >= pagination.pages - 2) {
-                    pageNum = pagination.pages - 4 + i;
-                  } else {
-                    pageNum = pagination.page - 2 + i;
+                {Array.from(
+                  { length: Math.min(5, pagination.pages) },
+                  (_, i) => {
+                    let pageNum;
+                    if (pagination.pages <= 5) {
+                      pageNum = i + 1;
+                    } else if (pagination.page <= 3) {
+                      pageNum = i + 1;
+                    } else if (pagination.page >= pagination.pages - 2) {
+                      pageNum = pagination.pages - 4 + i;
+                    } else {
+                      pageNum = pagination.page - 2 + i;
+                    }
+
+                    return (
+                      <Button
+                        key={pageNum}
+                        onClick={() => goToPage(pageNum)}
+                        variant={
+                          pagination.page === pageNum ? "default" : "outline"
+                        }
+                        size="sm"
+                        className="w-8 h-8"
+                        disabled={loading}
+                      >
+                        {loading && pagination.page === pageNum ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          pageNum
+                        )}
+                      </Button>
+                    );
                   }
-                  
-                  return (
-                    <Button
-                      key={pageNum}
-                      onClick={() => goToPage(pageNum)}
-                      variant={pagination.page === pageNum ? "default" : "outline"}
-                      size="sm"
-                      className="w-8 h-8"
-                      disabled={loading}
-                    >
-                      {loading && pagination.page === pageNum ? (
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                      ) : (
-                        pageNum
-                      )}
-                    </Button>
-                  );
-                })}
+                )}
               </div>
 
               <Button
@@ -360,9 +396,9 @@ export default function ProductsGrid() {
               <Skeleton className="h-4 w-48 mx-auto" />
             ) : (
               <>
-                Showing {((pagination.page - 1) * pagination.limit) + 1} to{" "}
-                {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
-                {pagination.total} products
+                Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
+                {Math.min(pagination.page * pagination.limit, pagination.total)}{" "}
+                of {pagination.total} products
               </>
             )}
           </div>

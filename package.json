@@ -71,7 +71,7 @@
     "next-auth": "latest",
     "next-cloudinary": "^6.16.0",
     "next-themes": "latest",
-    "nodemailer": "latest",
+    "nodemailer": "^7.0.5",
     "react": "^19",
     "react-day-picker": "8.10.1",
     "react-dom": "^19",
@@ -93,6 +93,7 @@
   },
   "devDependencies": {
     "@types/node": "^22",
+    "@types/nodemailer": "^6.4.17",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "postcss": "^8.5",
