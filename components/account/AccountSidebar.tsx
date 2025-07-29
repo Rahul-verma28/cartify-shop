@@ -11,9 +11,9 @@ import { Separator } from "@/components/ui/separator"
 
 const navigation = [
   { name: "Overview", href: "/account", icon: User },
-  { name: "Orders", href: "/account/orders", icon: ShoppingBag },
+  { name: "Orders", href: "/", icon: ShoppingBag },
   { name: "Wishlist", href: "/wishlist", icon: Heart },
-  { name: "Settings", href: "/account/settings", icon: Settings },
+  { name: "Settings", href: "/", icon: Settings },
 ]
 
 export default function AccountSidebar() {

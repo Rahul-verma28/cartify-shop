@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SessionUser } from "@/lib/types";
+import Link from "next/link";
 
 type SessionType = {
   user: SessionUser;
@@ -99,6 +100,11 @@ export default function AdminHeader({ onMobileMenuToggle }: AdminHeaderProps) {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Profile Settings</DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link href="/" className="flex items-center space-x-2">
+                    Website
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => signOut()}>
                   Sign Out
