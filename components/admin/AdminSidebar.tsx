@@ -27,6 +27,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import Image from "next/image";
 
 const navigation = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -158,10 +159,13 @@ export default function AdminSidebar({
       <div className="p-4 flex items-center justify-between border-b">
         {!collapsed && (
           <div className="flex items-center justify-center gap-3">
-            <span className="text-primary-foreground font-bold text-lg w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              M
-            </span>
-            <h2 className="text-lg font-semibold tracking-tight">
+            <Image
+              src="/logo.png"
+              alt="CartifyShop Logo"
+              width={42}
+              height={42}
+            />
+            <h2 className="text-lg text-blue-600 font-semibold tracking-tight">
               CartifyShop
             </h2>
           </div>

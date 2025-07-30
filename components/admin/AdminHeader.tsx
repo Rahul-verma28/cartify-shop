@@ -49,9 +49,6 @@ export default function AdminHeader({ onMobileMenuToggle }: AdminHeaderProps) {
 
             <div>
               <h1 className="text-xl font-semibold">Admin Dashboard</h1>
-              <p className="text-sm text-muted-foreground">
-                CartifyShop Management
-              </p>
             </div>
           </div>
 

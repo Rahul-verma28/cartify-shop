@@ -957,7 +957,7 @@ export default function Header() {
                 <DropdownMenuContent align="end" className="w-56">
                   {session && session?.user?.role === "admin" && (
                     <DropdownMenuItem asChild>
-                      <Link href="/account" className="flex items-center">
+                      <Link href="/admin" className="flex items-center">
                         <LayoutDashboard className="mr-2 h-4 w-4" />
                         Admin Dashboard
                       </Link>
