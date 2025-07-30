@@ -113,7 +113,7 @@ export default function Home() {
               {/* CTA Buttons */}
               <motion.div
                 variants={itemVariants}
-                className="mt-10 flex flex-col sm:flex-row gap-4"
+                className="mt-10 flex flex-row gap-4"
               >
                 <Button size="lg" className="group" asChild>
                   <Link href="#collections">
@@ -127,7 +127,7 @@ export default function Home() {
               </motion.div>
 
               {/* Trust Indicators */}
-              <motion.div
+              {/* <motion.div
                 variants={itemVariants}
                 className="mt-12 flex flex-wrap items-center gap-8 opacity-60"
               >
@@ -139,7 +139,7 @@ export default function Home() {
                   <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded opacity-50" />
                   <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded opacity-50" />
                 </div>
-              </motion.div>
+              </motion.div> */}
             </div>
 
             {/* Image Section */}

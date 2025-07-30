@@ -698,6 +698,7 @@ import { useNavigation } from "@/hooks/useNavigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { updateFilters } from "@/lib/redux/slices/productsSlice";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function Header() {
   const { data: session } = useSession();
@@ -761,13 +762,16 @@ export default function Header() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <div className="w-8 h-8 bg-blue-500 hover:bg-blue-600 rounded-sm flex items-center justify-center">
-                <span className="text-white font-bold text-lg">C</span>
-              </div>
+              <Image
+                src="/logo.png"
+                alt="CartifyShop Logo"
+                width={62}
+                height={62}
+              />
             </motion.div>
-            <span className="text-xl font-bold text-blue-500 hover:text-blue-600 transition-colors">
+            {/* <span className="text-xl font-bold text-blue-500 hover:text-blue-600 transition-colors">
               CartifyShop
-            </span>
+            </span> */}
           </Link>
 
           {/* Desktop Navigation */}

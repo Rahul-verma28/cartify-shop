@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import Image from "next/image";
 
 export default function Footer() {
   const footerLinks = {
@@ -50,7 +51,11 @@ export default function Footer() {
   const socialLinks = [
     { name: "Twitter", icon: Twitter, href: "#" },
     { name: "GitHub", icon: Github, href: "https://github.com/Rahul-verma28" },
-    { name: "LinkedIn", icon: Linkedin, href: "https://www.linkedin.com/in/rahul-verma-09227a263" },
+    {
+      name: "LinkedIn",
+      icon: Linkedin,
+      href: "https://www.linkedin.com/in/rahul-verma-09227a263",
+    },
     { name: "Instagram", icon: Instagram, href: "#" },
   ];
 
@@ -69,10 +74,13 @@ export default function Footer() {
                 viewport={{ once: true }}
               >
                 <Link href="/" className="flex items-center space-x-2 mb-4">
-                  <div className="w-8 h-8 bg-blue-500 hover:bg-blue-600 text-white rounded-lg flex items-center justify-center">
-                    <ShoppingBag className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="text-xl font-bold text-blue-500">
+                  <Image
+                    src="/logo.png"
+                    alt="CartifyShop Logo"
+                    width={42}
+                    height={42}
+                  />
+                  <span className="text-xl font-bold text-blue-700">
                     CartifyShop
                   </span>
                 </Link>
