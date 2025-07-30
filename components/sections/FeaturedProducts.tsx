@@ -38,11 +38,9 @@
 import { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
-import connectDB from "@/lib/mongoDB";
-import Product from "@/lib/models/Product";
 import ProductCard from "@/components/ProductCard";
 
-interface Product {
+interface ProductType {
   _id: string;
   title: string;
   slug: string;
@@ -92,33 +90,18 @@ function FeaturedProductsSkeleton() {
   );
 }
 
-async function getFeaturedProducts() {
-  await connectDB();
-  const products = await Product?.find({ featured: true })
-    .sort({
-      createdAt: -1, // Latest first
-      "rating.average": -1, // Then by highest rating
-      "rating.count": -1, // Then by most reviews
-    })
-    .limit(8)
-    .lean();
-  return JSON.parse(JSON.stringify(products));
-}
-
 export default function FeaturedProducts() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchFeaturedProducts();
-  }, []);
 
   const fetchFeaturedProducts = async () => {
     try {
       setLoading(true);
+      setError(null);
+      // Use correct query params for sorting
       const response = await fetch(
-        "/api/products?featured=true&limit=12&sort=latest"
+        "/api/products?featured=true&limit=8&sortBy=createdAt&order=desc"
       );
 
       if (!response.ok) {
@@ -129,11 +112,16 @@ export default function FeaturedProducts() {
       setProducts(data.products || []);
     } catch (error: any) {
       console.error("Error fetching featured products:", error);
-      setError(error.message);
+      setError(error.message || "Failed to load featured products");
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchFeaturedProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (loading) {
     return <FeaturedProductsSkeleton />;
@@ -147,9 +135,15 @@ export default function FeaturedProducts() {
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
               Featured Products
             </h2>
-            <p className="text-red-500">
+            <p className="text-red-500 mb-4">
               Failed to load featured products. Please try again later.
             </p>
+            <button
+              onClick={fetchFeaturedProducts}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+            >
+              Retry
+            </button>
           </div>
         </div>
       </section>
@@ -170,7 +164,7 @@ export default function FeaturedProducts() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products?.map((product: Product) => (
+          {products?.map((product: ProductType) => (
             <ProductCard key={product._id} product={product} />
           ))}
         </div>
@@ -178,8 +172,6 @@ export default function FeaturedProducts() {
     </section>
   );
 }
-
-
 
 // import Product from "@/lib/models/Product";
 // import connectDB from "@/lib/mongoDB";
