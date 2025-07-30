@@ -696,7 +696,7 @@ import {
 import ThemeToggle from "../ThemeToggle";
 import { useNavigation } from "@/hooks/useNavigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { updateFilters } from "@/lib/redux/slices/productsSlice";
+import { resetFilters, updateFilters } from "@/lib/redux/slices/productsSlice";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -730,6 +730,7 @@ export default function Header() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchInput.trim()) return;
+    dispatch(resetFilters());
     router.push("/products");
     dispatch(updateFilters({ search: searchInput }));
     setSearchInput("");

@@ -231,15 +231,15 @@ export default function ProductFilters() {
               ))
             ) : (
               displayCategories.map((category) => (
-                <div key={category._id || category.slug} className="flex items-center space-x-2">
+                <div key={category._id || category.title} className="flex items-center space-x-2">
                   <Checkbox
-                    id={category.slug || category._id}
-                    checked={filters.category === (category.slug || category._id)}
+                    id={category.title || category._id}
+                    checked={filters.category === (category.title || category._id)}
                     onCheckedChange={() =>
-                      handleCategoryChange(category.slug || category._id)
+                      handleCategoryChange(category.title || category._id)
                     }
                   />
-                  <Label htmlFor={category.slug || category._id} className="text-xs">
+                  <Label htmlFor={category.title || category._id} className="text-xs">
                     {category.title}
                   </Label>
                 </div>

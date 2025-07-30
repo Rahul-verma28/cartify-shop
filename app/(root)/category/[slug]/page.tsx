@@ -285,14 +285,6 @@ export default function CategoryPage({
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-indigo-900 via-blue-900 to-purple-900 dark:from-gray-900 dark:via-gray-800 dark:to-black">
         <div className="absolute inset-0 opacity-30 dark:opacity-20">
-          {category.image && (
-            <Image
-              src={category.image.trim() || "/placeholder.svg"}
-              alt={category.title}
-              fill
-              className="object-cover"
-            />
-          )}
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent dark:from-black/70"></div>
 
