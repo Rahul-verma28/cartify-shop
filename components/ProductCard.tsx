@@ -184,7 +184,7 @@ export default function ProductCard({
                 </span>
                 {product?.comparePrice &&
                   product?.comparePrice > product?.price && (
-                    <span className="text-xs text-muted-foreground line-through">
+                    <span className="hidden sm:block text-xs text-muted-foreground line-through">
                       ${product?.comparePrice}
                     </span>
                   )}
