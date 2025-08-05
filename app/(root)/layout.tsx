@@ -50,7 +50,7 @@ export default function RootLayout({
           {children}
           <Footer />
           <CartDrawer />
-          <Toaster position="top-right" richColors />
+          <Toaster richColors />
         </Providers>
       </body>
     </html>

@@ -161,7 +161,7 @@ export default function ProductPage({ params }: ProductPageProps) {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <Link href={`/category/${product.category}`}>
+          <Link href={`/category/${categorySlug}`}>
             <Button
               variant="ghost"
               size="sm"

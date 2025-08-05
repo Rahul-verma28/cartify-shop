@@ -50,7 +50,7 @@ export default async function AdminLayout({
         <Providers>
           <AdminLayoutClient>{children}</AdminLayoutClient>
         </Providers>
-        <Toaster position="top-right" richColors />
+        <Toaster richColors />
       </body>
     </html>
   );

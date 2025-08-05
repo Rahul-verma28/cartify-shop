@@ -44,7 +44,7 @@ export default async function AuthLayout({
       >
         <Providers>
           {children}
-          <Toaster position="top-right" richColors />
+          <Toaster richColors />
         </Providers>
       </body>
     </html>
